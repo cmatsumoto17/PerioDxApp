@@ -1,0 +1,288 @@
+WindowManager:
+    LoginWindow:
+
+    MainMenuWindow:
+
+    CreateAccountWindow:
+
+    TestInstructionsWindow:
+
+    CameraWindow:
+        id: camera_scr
+
+    ResultsWindow:
+        id: data_scr
+
+<LoginWindow>:
+    name: "login"
+    #md_bg_color: [204/255, 153/255, 255/255,1]
+    # MDCard:
+    #     size_hint: None, None
+    #     size: 450, 800
+    #     pos_hint: {"center_x": .5, "center_y":.5}
+    #     elevation: 15
+    #     #md_bg_color: [229/255, 204/255, 255/255,1]
+    #     padding: 25
+    #     spacing: 25
+    #     orientation: 'vertical'
+
+    #adding items to the card
+    FloatLayout        :
+        
+
+        Image:
+            source: 'PerioLogo.png'
+            size_hint: None, None
+            pos_hint: {"center_x": .5, "y":.55}
+            size_hint: .5, .5
+
+        MDTextField:
+            id: "email"
+            hint_text: "email"
+            icon_right: "account"
+            mode: "round"
+            size_hint_x: None
+            width: 200
+            font_size: 18
+            pos_hint: {'center_x': .5,'y': .5}
+            size_hint: (.8,.1)
+            on_text_validate:  pwd_field.focus =true
+
+        MDLabel:
+            id:"blank"
+            text: "User and/or password requried"
+            pos_hint: {'x': .2,'y': .4}
+            size_hint: (.8,.1)
+            
+        MDTextField:
+            id: "password"
+            hint_text: "password"
+            icon_right: "eye-off"
+            mode: "round"
+            width: 200
+            font_size: 18
+            pos_hint: {'center_x': .5,'y': .3}
+            size_hint: (.8,.1)
+            password: True
+            on_text_validate: root.checkPass()
+
+        Button:
+            text: "Log In"
+            font_size: 16
+            background_color: (0/255, 239/255, 255/255)
+            pos_hint: {'center_x': .5,'y': .15}
+            size_hint: (.8,.1)
+            on_release: 
+                #app.checkUser();
+                #app.checkPass();
+                app.root.current= "main menu"
+                root.manager.transition.direction = "left"
+
+        Button:
+            text: "Create An Account"
+            font_size: 16
+            background_color: (0/255, 239/255, 255/255)
+            pos_hint: {'center_x': .5,'y': 0}
+            size_hint: (.8,.1)
+            on_release: 
+                app.root.current= "create account"
+                root.manager.transition.direction = "left"
+
+<CreateAccountWindow>:
+    name: "create account"
+    MDCard:
+        size_hint: (1, 1)
+        # size: 300, 400
+        pos_hint: {"center_x": .5, "center_y":.5}
+        elevation: 15
+        #md_bg_color: [229/255, 204/255, 255/255,1]
+        padding: 25
+        spacing: 25
+        orientation: 'vertical'
+
+        MDLabel:
+            id:"create_account_label"
+            text:"Create An Account"
+            font_size: 20
+            halign: "center"
+            size_hint_y: None
+            height: self.texture_size[1]
+            
+
+        MDTextField:
+            id: "first_name"
+            hint_text: "First Name"
+            icon_right: "account"
+            mode: "round"
+            size_hint_x: None
+            width: 200
+            font_size: 12
+            pos_hint: {'center_x': 0.5}
+            
+        MDTextField:
+            id: "last_name"
+            hint_text: "Last Name"
+            icon_right: "account"
+            mode: "round"
+            size_hint_x: None
+            width: 200
+            font_size: 12
+            pos_hint: {'center_x': 0.5}
+
+        MDTextField:
+            id: "email"
+            hint_text: "Email"
+            icon_right: "account"
+            mode: "round"
+            size_hint_x: None
+            width: 200
+            font_size: 12
+            pos_hint: {'center_x': 0.5}
+
+        MDTextField:
+            id: "password"
+            hint_text: "Password"
+            icon_right: "eye-off"
+            mode: "round"
+            width: 200
+            font_size: 12
+            pos_hint: {"center_x": 0.5}
+            password: True
+
+        MDTextField:
+            id: "verify_password"
+            hint_text: "Verify Password"
+            icon_right: "eye-off"
+            mode: "round"
+            width: 200
+            font_size: 16
+            pos_hint: {"center_x": 0.5}
+            password: True
+
+        MDFlatButton:
+            text: "Create Account"
+            font_size: 16
+            pos_hint: {"center_x": 0.5}
+            on_release: 
+                #app.createAccount();
+                app.root.current= "login"
+                root.manager.transition.direction = "left"
+
+<MainMenuWindow>:
+    name:"main menu"
+    MDCard:
+        size_hint: (1, 1)
+        size: 300, 400
+        pos_hint: {"center_x": .5, "center_y":.5}
+        elevation: 15
+        #md_bg_color: [229/255, 204/255, 255/255,1]
+        padding: 25
+        spacing: 25
+        orientation: 'vertical'
+
+        Image:
+            source: 'PerioLogo.png'
+            size_hint: None, None
+            pos_hint: {"center_x": .5, "y":.55}
+            size_hint: .6, .6
+
+        # MDLabel:
+        #     id:"title_label"
+        #     text:"Perio-Dx: Bad Teeth = Bad Kidneys + Bad Heart"
+        #     font_size: 40
+        #     bold: True
+        #     halign: "center"
+        #     size_hint_y: None
+        #     height: self.texture_size[1]
+
+        Button:
+            id: "upload_test_button"
+            text: "Upload Test"
+            font_size: 16
+            bold: True
+            background_color: (0/255, 239/255, 255/255)
+            pos_hint: {'center_x': .5,'y': .15}
+            size_hint: (.8,.1)
+            on_release: 
+                app.root.current= "test instructions"
+                root.manager.transition.direction = "left"
+
+        Button:
+            id: "view_results_button"
+            text: "View Test Results"
+            font_size: 16
+            bold: True
+            background_color: (0/255, 239/255, 255/255)
+            pos_hint: {'center_x': .5,'y': .05}
+            size_hint: (.8,.1) 
+            on_release: 
+                app.root.current= "results"
+                root.manager.transition.direction = "left"
+                app.add_datatable()
+
+<TestInstructionsWindow>:
+    name: "test instructions"
+    MDCard:
+        orientation: "vertical"
+        MDLabel:
+            text:"Instructions for Test:" 
+            bold: True
+            font_size: 30
+            halign: "center"
+            pos_hint: {"center_x": .5, "y":.8}
+            size_hint: .8, .2
+
+        MDLabel:
+            text:"To take a test, first enter a well-lit environment. Then line up the dots displayed on the camera with the lines on the test strip.  Press Save Image to capture the image and wait for results."
+            bold: False
+            font_size: 16
+            halign: "center"
+            pos_hint: {"center_x": .5, "y":.7} 
+            size_hint: .8, .4
+
+    Button:
+        text: "Continue to Test"
+        font_size: 16
+        bold: True
+        background_color: (0/255, 239/255, 255/255)
+        pos_hint: {'center_x': .5,'y': .1}
+        size_hint: (.8,.1) 
+        on_release:
+            app.root.current = "camera"
+            root.manager.transition.direction = "left"
+            app.add_camera()
+
+<CameraWindow>:
+    name: "camera" 
+    FloatLayout:
+        background_color: (255, 255, 255)
+        AnchorLayout:
+            id: camera_layout
+            size_hint: (.95, 1)
+
+        MDFloatingActionButton:
+            icon: "camera"
+            pos_hint: {"center_x": .5, "y": .05}
+            on_release: 
+                app.root.current = 'results'
+                app.color_analysis()
+                app.add_datatable()
+
+        MDFloatingActionButton:
+            icon: 'arrow-left'
+            pos_hint: {'x': .1, 'y': .05}
+            on_release: app.root.current = 'main menu'
+                
+
+
+<ResultsWindow>:
+    name: "results"
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        MDFloatingActionButton:
+            icon: 'arrow-left'
+            on_release: app.root.current = 'main menu'
+
+        AnchorLayout:
+            id: data_layout    
