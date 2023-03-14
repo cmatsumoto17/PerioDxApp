@@ -1,7 +1,6 @@
-# creating a login page
+
 import kivy
-import cv2
-# import mysql.connector
+
 from kivy.lang import Builder
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
@@ -11,22 +10,30 @@ from kivy.graphics.texture import Texture
 from kivy.uix.image import Image
 from kivymd.uix.datatables import MDDataTable
 from kivy.clock import Clock
-from datetime import date
-
 from kivymd.uix.label import MDLabel
 from kivy.metrics import dp
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import NumericProperty, ListProperty,StringProperty, ObjectProperty
-
 from kivy.config import Config
 
+import cv2
+
+from cryptography.fernet import Fernet
+import bcrypt
+
+from datetime import date
+
+import sqlite3
+import re
+
+
+
+#set screen size
 Config.set('graphics', 'resizeable', False)
-Config.set('graphics', 'width', 200)
+Config.set('graphics', 'width', 200)# different screens
 
-#Builder.load_file('src/menus/home.py')
+### Create the classes for each window ###
 
-
-# different screens
 # login page
 class LoginWindow(Screen):
     pass
@@ -50,99 +57,156 @@ class ResultsWindow(Screen):
 class WindowManager(ScreenManager):
     pass
 
-# creating the app
+
+### Creates the GUI ###
 class MainApp(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.data_tables = None
         
-        
+    # builds gui
     def build(self):
         self.theme_cls.theme_style = "Light"
         self.theme_cls.primary_palette = "BlueGray"
-        
-        # connecting to the local mysql database
-        # note: needed: $ pip install mysql-connector-python
-        # mydb = mysql.connector.connect(
-        #     host = "localhost", # url of the database
-        #     user = "root", # default user
-        #     passwd = "www.498SeniorDesign.com", #TODO hide password
-        #     database = "users_db"
-        #     )
+
+        # create database or connect to one
+        connection = sqlite3.connect('enc_database.db')
+
         # create a cursor
-        # c = mydb.cursor()
+        c = connection.cursor()
 
-        # create a database
-        #c.execute("CREATE DATABASE IF NOT EXISTS users_db") #name of the database if users_db
+        # create a table
+        c.execute(""" CREATE TABLE if not exists patients(
+            first_name TEXT,
+            last_name TEXT, 
+            email TEXT,
+            password TEXT,
+            salt INTEGER)
+            """)
 
-        # check if database was created
-        #c.execute("SHOW DATABASES")
-        #for db in c:
-            #print(db)
+        # commit the changes
+        connection.commit()
+
+        # close the connections
+        connection.close()
         
-        # create table
-        # c.execute("""CREATE TABLE if not exists users(
-        #     first_name VARCHAR(50),
-        #     last_name VARCHAR(50),
-        #     email VARCHAR(50),
-        #     password VARCHAR(50)
-        # )
-        # """)
+# Builder.load_file('main.kv')
 
-        # commit changes
-        # mydb.commit()
+    def check_email(self):
+        # check email pattern
+        email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+        if(self.root.ids.create_account_scr.ids.email.text == ''):
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty email address text field'
+            return 0
+        elif(email_pattern != self.root.ids.create_account_scr.ids.email.text):
+        
+            # validity email error message
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Please enter a valid email address'
+            return 0
 
-        # close connection
-        # mydb.close()
-
-        # checking if the database is connected 
-        # print(mydb)
-
-    # creating user into the database
-    def createuser(self):
-        # mydb = mysql.connector.connect(
-        #     host = "localhost", # url of the database
-        #     user = "root", # default user
-        #     passwd = "www.498SeniorDesign.com", #TODO hide password
-        #     database = "users_db"
-        #     )
-        # create a cursor
-        # c = mydb.cursor()
-
-        # add first name
-        add_first_name = "INSERT INTO users (first_name) VALUES (%s)"
-        values = (self.root.ids.first_name.text,)
-
-        # c.execute(add_first_name, values)
-        # add messesage
-        # add
-
-        # commit changes
-        # mydb.commit()
-
-        # close connection
-        # mydb.close()
-
-
-    # checking the user's password
-    def checkPass(self):
-        # obtaining user's inputs
-        email_field = self.ids.email
-        passwd_field = self.ids.password
-
-        email = email_field.text
-        passwd = passwd_field.text
-
-        # blank error message
-        blank_user_pass = self.ids.blank
-
-        if email == " " or passwd == " ":
-            blank_user_pass.text = ("[color = #FF0000]User and/or password requried[/color]")
+        #TODO check if the email exists in the database
         else:
-            print("logged in successfully")
+            return self.root.ids.create_account_scr.ids.email.text
+            
 
-        return Builder.load_file('main.kv')
-    
+    def check_password(self):
+        password_pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+        if(self.root.ids.create_account_scr.ids.password.text == ''):
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty password field'
+            return 0
+
+        elif(self.root.ids.create_account_scr.ids.password_verification.text == ''):
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty password verification field'
+            return 0
+
+        elif(re.match(password_pattern,self.root.ids.create_account_scr.ids.password.text)):
+            if(self.root.ids.create_account_scr.ids.password.text == self.root.ids.create_account_scr.ids.password_verification.text):
+                
+                print(self.root.ids.create_account_scr.ids.password.text)
+                return self.root.ids.create_account_scr.ids.password.text
+                
+            else:
+                # password don't match error message
+                self.root.ids.create_account_scr.ids.create_account_label.text = f'Passwords Do Not Match'
+                return 0
+            
+        else:
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Please enter a password thats a minimum length of 8, at least one uppercase letter, at least one lowercase letter, at least one digit, at least one specicial character'
+            return 0
+
+    def create_account(self):
+        password_pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+        email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+        
+        if(self.root.ids.create_account_scr.ids.first_name.text == ''):
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty first name field'
+        elif(self.root.ids.create_account_scr.ids.last_name.text == ''):
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty last name field'
+        elif(self.root.ids.create_account_scr.ids.email.text == ''):
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty email address field'
+        
+        
+        
+        elif(not(re.match(email_pattern, self.root.ids.create_account_scr.ids.email.text))):
+            self.root.ids.create_account_scr.ids.email.text = ''
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Please enter a valid email address'
+        #TODO check if the email exists in the database
+        elif(self.root.ids.create_account_scr.ids.password.text == ''):
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty password field'
+
+        elif(not(re.match(password_pattern,self.root.ids.create_account_scr.ids.password.text))):
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Please enter a password thats a minimum length of 8, at least one uppercase letter, at least one lowercase letter, at least one digit, at least one special character'
+        elif(self.root.ids.create_account_scr.ids.password_verification.text == ''):
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty password verification field'
+        elif(self.root.ids.create_account_scr.ids.password.text != self.root.ids.create_account_scr.ids.password_verification.text):
+            # password don't match error message
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Passwords Do Not Match' 
+        else:
+            # create database or connect to one
+            connection = sqlite3.connect('enc_database.db')
+
+            # create a cursor
+            c = connection.cursor()
+
+            # adding patient
+            first_name = self.root.ids.create_account_scr.ids.first_name.text
+            last_name = self.root.ids.create_account_scr.ids.last_name.text
+            email = self.root.ids.create_account_scr.ids.email.text
+            password = self.root.ids.create_account_scr.ids.password.text
+            
+            #hashing password
+            pass_bytes = password.encode('utf-8')
+            salt = bcrypt.gensalt()
+            hash_pass = bcrypt.hashpw(pass_bytes, salt)
+            
+            print(salt)
+            print(hash_pass)
+            
+            c.execute("INSERT INTO patients VALUES(?,?,?,?,?)",(first_name, last_name, email, hash_pass, salt))
+
+            # add a little message
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'{first_name} {last_name} Account Created '
+
+            # clear the input box
+            self.root.ids.create_account_scr.ids.first_name.text = ''
+            self.root.ids.create_account_scr.ids.last_name.text = ''
+            self.root.ids.create_account_scr.ids.email.text = ''
+            self.root.ids.create_account_scr.ids.password.text = ''
+            self.root.ids.create_account_scr.ids.password_verification.text = ''
+
+            # commit the changes
+            connection.commit()
+
+            # close the connections
+            connection.close()
+            
+            self.root.current = "main menu"
+            
+            
+        
+            return Builder.load_file('main.kv')
+        
+        
     def add_camera(self):
         #adding image to screen
         self.img = Image()
@@ -230,7 +294,7 @@ class MainApp(MDApp):
         
         self.root.ids.data_scr.ids.data_layout.add_widget(self.data_tables)
         
+        
+# runs the app / calls MainApp
 if __name__ == "__main__":
     MainApp().run()
-
-
