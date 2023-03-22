@@ -7,6 +7,8 @@ WindowManager:
         id: create_account_scr
     TestInstructionsWindow:
 
+    CameraWindow:
+
 
     
 <LoginWindow>:
@@ -235,3 +237,24 @@ WindowManager:
             font_size: 16
             halign: "center"
             pos_hint: {"center_x": .5, "center_y":.5} 
+
+<CameraWindow>:
+    name: "camera" 
+    FloatLayout:
+        background_color: (255, 255, 255)
+        AnchorLayout:
+            id: camera_layout
+            size_hint: (.95, 1)
+
+        MDFloatingActionButton:
+            icon: "camera"
+            pos_hint: {"center_x": .5, "y": .05}
+            on_release: 
+                app.root.current = 'results'
+                app.color_analysis()
+                app.add_datatable()
+
+        MDFloatingActionButton:
+            icon: 'arrow-left'
+            pos_hint: {'x': .1, 'y': .05}
+            on_release: app.root.current = 'main menu'

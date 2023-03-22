@@ -90,24 +90,76 @@ class MainApp(MDApp):
         # close the connections
         connection.close()
         
-# Builder.load_file('main.kv')
+    def check_email_db(self):
+        connection = sqlite3.connect('test_database.db')
+        c = connection.cursor()
+        c.execute("SELECT email FROM patients")
+        email_exists = c.fetchone()
+        c.close()
 
-    def check_email(self):
-        # check email pattern
-        email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
-        if(self.root.ids.create_account_scr.ids.email.text == ''):
-            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty email address text field'
-            return 0
-        elif(email_pattern != self.root.ids.create_account_scr.ids.email.text):
+        if email_exists:
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'This email has been used before'
+            return email_exists[0]
         
-            # validity email error message
-            self.root.ids.create_account_scr.ids.create_account_label.text = f'Please enter a valid email address'
-            return 0
-
-        #TODO check if the email exists in the database
         else:
-            return self.root.ids.create_account_scr.ids.email.text
+            return None
+
+        
+    def login(self):
+        email = self.root.ids.login_scr.ids.email.text
+        userPassword = self.root.ids.login_scr.ids.password.text
+        passwordsMatch = False
+        dbpassword = None
+        
+        #encode entered password to utf-8 bytes
+        userBytes = userPassword.encode('utf-8')
+        
+        #connect to database
+        connection = sqlite3.connect('enc_database.db')
+        
+        c = connection.cursor()
+        
+        ### CHECKING PASSWORD ###
+        #get password stored in database for provided email
+        hashq = "SELECT password FROM patients WHERE email = ?"
+        c.execute(hashq, (email,))
+        
+        #return table entry 
+        hashq = c.fetchone()     
+        print("Hash query")   
+        print(hashq)
+        
+        if hashq is not None:
+            #extract password from the table returned
+            dbpassword = hashq[0]
+            print(dbpassword)
+        
+            passwordsMatch = bcrypt.checkpw(userBytes, dbpassword)
+            print("Password Result after checking hash")
+            print(passwordsMatch)
+        
+        
+        #check if email exitst
+        query= "SELECT email FROM patients WHERE email = ?"
+        c.execute(query, (email,))
+        patient = c.fetchone()
+        
+        
+        c.close()
+
+        # if patient is not None and passwordsMatch == True :
+        if passwordsMatch == True :
+            self.root.ids.login_scr.ids.error.text = f'Correct Credentials'
+            self.root.current = "main menu"
+            return True
+        else:
             
+            self.root.ids.login_scr.ids.email.text == ''
+            self.root.ids.login_scr.ids.password.text == ''
+            self.root.ids.login_scr.ids.error.text = f'Incorrect Credentials'
+            
+            return False
+             
 
     def check_password(self):
         password_pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
@@ -133,11 +185,39 @@ class MainApp(MDApp):
         else:
             self.root.ids.create_account_scr.ids.create_account_label.text = f'Please enter a password thats a minimum length of 8, at least one uppercase letter, at least one lowercase letter, at least one digit, at least one specicial character'
             return 0
+    
+    
+    def email_exist(self):
+        email = self.root.ids.create_account_scr.ids.email.text
+        connection = sqlite3.connect('test_database.db')
+        c = connection.cursor()
+        c.execute("SELECT * FROM patients WHERE email=?", (email,))
+        result = c.fetchone()
+        c.close()
 
+
+        # check if the email exists in the database
+        if result:
+            self.root.ids.create_account_scr.ids.email.text = ''
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Match found'
+            
+        else:
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'No Match found'
+    
+    
     def create_account(self):
-        password_pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+        e = self.root.ids.create_account_scr.ids.email.text
+        password_pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" #!Q1w2e3r4 
         email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+
+        connection = sqlite3.connect('test_database.db')
+        c = connection.cursor()
+        c.execute("SELECT * FROM patients WHERE email=?", (e,))
+        email_exists = c.fetchone()
+        c.close()
         
+        
+
         if(self.root.ids.create_account_scr.ids.first_name.text == ''):
             self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty first name field'
         elif(self.root.ids.create_account_scr.ids.last_name.text == ''):
@@ -145,12 +225,16 @@ class MainApp(MDApp):
         elif(self.root.ids.create_account_scr.ids.email.text == ''):
             self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty email address field'
         
-        
-        
         elif(not(re.match(email_pattern, self.root.ids.create_account_scr.ids.email.text))):
             self.root.ids.create_account_scr.ids.email.text = ''
             self.root.ids.create_account_scr.ids.create_account_label.text = f'Please enter a valid email address'
-        #TODO check if the email exists in the database
+        # check if the email exists in the database
+        if email_exists:
+            self.root.ids.create_account_scr.ids.email.text = ''
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Email Already Exists'
+            
+            return email_exists[0] 
+        
         elif(self.root.ids.create_account_scr.ids.password.text == ''):
             self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty password field'
 
@@ -162,6 +246,7 @@ class MainApp(MDApp):
             # password don't match error message
             self.root.ids.create_account_scr.ids.create_account_label.text = f'Passwords Do Not Match' 
         else:
+            print("fucntion is working")
             # create database or connect to one
             connection = sqlite3.connect('enc_database.db')
 
@@ -173,7 +258,8 @@ class MainApp(MDApp):
             last_name = self.root.ids.create_account_scr.ids.last_name.text
             email = self.root.ids.create_account_scr.ids.email.text
             password = self.root.ids.create_account_scr.ids.password.text
-            
+
+
             #hashing password
             pass_bytes = password.encode('utf-8')
             salt = bcrypt.gensalt()
@@ -187,6 +273,7 @@ class MainApp(MDApp):
             # add a little message
             self.root.ids.create_account_scr.ids.create_account_label.text = f'{first_name} {last_name} Account Created '
 
+
             # clear the input box
             self.root.ids.create_account_scr.ids.first_name.text = ''
             self.root.ids.create_account_scr.ids.last_name.text = ''
@@ -199,10 +286,12 @@ class MainApp(MDApp):
 
             # close the connections
             connection.close()
-            
-            self.root.current = "main menu"
-            
-            
+
+            # reload screen
+            #print('this section of my code is working')
+            #MainApp.root = CreateAccountWindow()
+            #MainApp.root.clear_widgets()
+            #MainApp.root.add_widget(MainApp.root.build())
         
             return Builder.load_file('main.kv')
         

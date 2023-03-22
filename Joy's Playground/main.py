@@ -26,10 +26,26 @@ class CreateAccountWindow(Screen):
     pass
 class TestInstructionsWindow(Screen):
     pass 
+
+#create camera window
+class CameraWindow(Screen):
+    pass
+#create results window
+class ResultsWindow(Screen):
+    pass
+
 # window manager
 class WindowManager(ScreenManager):
     LoginWindow = ObjectProperty(None)
     MainMenuWindow = ObjectProperty(None)
+    
+#create camera window
+class CameraWindow(Screen):
+    pass
+#create results window
+class ResultsWindow(Screen):
+    pass
+         
 
 class MainApp(MDApp):
     

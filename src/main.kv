@@ -160,9 +160,17 @@ WindowManager:
             font_size: 12
             pos_hint: {"center_x": 0.5}
             on_release: 
+                #app.email_exist()
                 app.create_account()
                 #app.root.current= "login"
                 #root.manager.transition.direction = "left"
+        MDFlatButton:
+            text: "Back"
+            font_size: 12
+            pos_hint: {"center_x": 0.5}
+            on_release: 
+                app.root.current= "login"
+                root.manager.transition.direction = "left"
 
 <MainMenuWindow>:
     name:"main menu"
