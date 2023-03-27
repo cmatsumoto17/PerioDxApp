@@ -8,6 +8,9 @@ WindowManager:
     TestInstructionsWindow:
 
     CameraWindow:
+        id: camera_scr
+    ResultsWindow:
+        id: data_scr
 
 
     
@@ -62,7 +65,8 @@ WindowManager:
             pos_hint: {'center_x': .5,'y': .3}
             size_hint: (.8,.1)
             password: True
-            on_text_validate: root.checkPass()
+            on_text_validate: 
+            #root.checkPass()
         MDLabel:
             id: error
             text: ""
@@ -183,7 +187,7 @@ WindowManager:
 <MainMenuWindow>:
     name:"main menu"
     MDCard:
-        size_hint: None, None
+        size_hint: (1, 1)
         size: 300, 400
         pos_hint: {"center_x": .5, "center_y":.5}
         elevation: 15
@@ -192,51 +196,77 @@ WindowManager:
         spacing: 25
         orientation: 'vertical'
 
-        MDLabel:
-            id:"title_label"
-            text:"Perio-Dx: Bad Teeth = Bad Kidneys + Bad Heart"
-            font_size: 40
-            bold: True
-            halign: "center"
-            size_hint_y: None
-            height: self.texture_size[1]
+        Image:
+            source: 'PerioLogo.png'
+            size_hint: None, None
+            pos_hint: {"center_x": .5, "y":.55}
+            size_hint: .6, .6
 
-        MDFlatButton:
+        # MDLabel:
+        #     id:"title_label"
+        #     text:"Perio-Dx: Bad Teeth = Bad Kidneys + Bad Heart"
+        #     font_size: 40
+        #     bold: True
+        #     halign: "center"
+        #     size_hint_y: None
+        #     height: self.texture_size[1]
+
+        Button:
             id: "upload_test_button"
             text: "Upload Test"
-            font_size: 12
-            pos_hint: {"center_x": 0.5}
+            font_size: 16
+            bold: True
+            background_color: (0/255, 239/255, 255/255)
+            pos_hint: {'center_x': .5,'y': .15}
+            size_hint: (.8,.1)
             on_release: 
                 app.root.current= "test instructions"
                 root.manager.transition.direction = "left"
 
-        MDFlatButton:
+        Button:
             id: "view_results_button"
             text: "View Test Results"
-            font_size: 12
-            pos_hint: {"center_x": 0.5}  
+            font_size: 16
+            bold: True
+            background_color: (0/255, 239/255, 255/255)
+            pos_hint: {'center_x': .5,'y': .05}
+            size_hint: (.8,.1) 
             on_release: 
-                app.root.current= "view results"
+                app.root.current= "results"
                 root.manager.transition.direction = "left"
+                app.add_datatable()
 
 <TestInstructionsWindow>:
     name: "test instructions"
     MDCard:
+        orientation: "vertical"
         MDLabel:
             text:"Instructions for Test:" 
-            color: (51,0,204,1)
             bold: True
-            font_size: 40
+            font_size: 30
             halign: "center"
-            pos_hint: {"center_x": .5, "center_y":.5}
+            pos_hint: {"center_x": .5, "y":.8}
+            size_hint: .8, .2
 
         MDLabel:
-            text:"To take a test, first enter a well-lit environment. Then line up the dots displayed on the camera with the lines on the test strip.  Press Save Image to capture the image and wait for results"
-            color: (51,0,204,1)
+            text:"To take a test, first enter a well-lit environment. Then line up the dots displayed on the camera with the lines on the test strip.  Press Save Image to capture the image and wait for results."
             bold: False
             font_size: 16
             halign: "center"
-            pos_hint: {"center_x": .5, "center_y":.5} 
+            pos_hint: {"center_x": .5, "y":.7} 
+            size_hint: .8, .4
+    Button:
+        text: "Continue to Test"
+        font_size: 16
+        bold: True
+        background_color: (0/255, 239/255, 255/255)
+        pos_hint: {'center_x': .5,'y': .1}
+        size_hint: (.8,.1) 
+        on_release:
+            app.root.current = "camera"
+            root.manager.transition.direction = "left"
+            app.add_camera()
+
 
 <CameraWindow>:
     name: "camera" 
@@ -250,7 +280,7 @@ WindowManager:
             icon: "camera"
             pos_hint: {"center_x": .5, "y": .05}
             on_release: 
-                app.root.current = 'results'
+                app.root.current = "results"
                 app.color_analysis()
                 app.add_datatable()
 
@@ -258,3 +288,15 @@ WindowManager:
             icon: 'arrow-left'
             pos_hint: {'x': .1, 'y': .05}
             on_release: app.root.current = 'main menu'
+
+<ResultsWindow>:
+    name: "results"
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        MDFloatingActionButton:
+            icon: 'arrow-left'
+            #on_release: app.root.current = 'main menu'
+
+        AnchorLayout:
+            id: data_layout   
