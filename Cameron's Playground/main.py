@@ -81,7 +81,11 @@ class MainApp(MDApp):
             last_name TEXT, 
             email TEXT,
             password TEXT,
-            salt INTEGER)
+            salt INTEGER,
+            time TEXT,
+            r INTEGER,
+            g INTEGER, 
+            b INTEGER)
             """)
 
         # commit the changes
@@ -352,6 +356,18 @@ class MainApp(MDApp):
         timestamp = str(date.today())
         test_Results =  timestamp + " " + str(r) + " " + str(g) + " " + str(b) + "\n"
         
+        
+        #INSERT DATA INTO DATABASE
+        # create database or connect to one
+        connection = sqlite3.connect('enc_database.db')
+
+        # create a cursor
+        c = connection.cursor()
+        
+        c.execute("INSERT INTO patients VALUES(date,r,g,b)",(timestamp, r, g, b))
+
+        
+        #INSERT DATA INTO TXT FILE
         file = open("Test_Results.txt", "a")
         file.write(test_Results)
         
