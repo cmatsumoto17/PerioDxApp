@@ -392,7 +392,7 @@ class MainApp(MDApp):
                 rows_num = 20,
                 column_data = [
                     ("Date", dp(20)),
-                    ("Result", dp(20))
+                    ("Result", dp(20)),
                     ("R", dp(10)), 
                     ("G", dp(10)),
                     ("B", dp(10)),
