@@ -353,18 +353,30 @@ class MainApp(MDApp):
         g = pixel_center[1]
         b = pixel_center[2]
         
+        concentration = None
+        
+        if g > 170:
+            concentration = "LOW"
+        elif g > 85:
+            concentration = "MED"
+        elif g > 0:
+            concentration = "HIGH" 
+        else:
+            concentration = "Error"
+            
+        
         timestamp = str(date.today())
-        test_Results =  timestamp + " " + str(r) + " " + str(g) + " " + str(b) + "\n"
+        test_Results =  timestamp + " " + concentration + " " + str(r) + " " + str(g) + " " + str(b) + "\n"
         
         
         #INSERT DATA INTO DATABASE
         # create database or connect to one
-        connection = sqlite3.connect('enc_database.db')
+        # connection = sqlite3.connect('enc_database.db')
 
-        # create a cursor
-        c = connection.cursor()
+        # # create a cursor
+        # c = connection.cursor()
         
-        c.execute("INSERT INTO patients VALUES(date,r,g,b)",(timestamp, r, g, b))
+        # c.execute("INSERT INTO patients VALUES(date,r,g,b)",(timestamp, r, g, b))
 
         
         #INSERT DATA INTO TXT FILE
@@ -380,6 +392,7 @@ class MainApp(MDApp):
                 rows_num = 20,
                 column_data = [
                     ("Date", dp(20)),
+                    ("Result", dp(20))
                     ("R", dp(10)), 
                     ("G", dp(10)),
                     ("B", dp(10)),

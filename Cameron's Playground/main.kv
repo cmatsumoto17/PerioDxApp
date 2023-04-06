@@ -31,7 +31,7 @@ WindowManager:
     #     orientation: 'vertical'
 
     #adding items to the card
-    FloatLayout        :
+    FloatLayout:
 
         Image:
             source: 'PerioLogo.png'
@@ -67,7 +67,7 @@ WindowManager:
             pos_hint: {'center_x': .5,'y': .3}
             size_hint: (.8,.1)
             password: True
-            on_text_validate: root.checkPass()
+            on_text_validate: root.check_password()
         MDLabel:
             id: error
             text: ""
@@ -98,15 +98,7 @@ WindowManager:
 <CreateAccountWindow>:
     id: create_account_scr
     name: "create account"
-    MDCard:
-        size_hint: (1, 1)
-        size: 300, 400
-        pos_hint: {"center_x": .5, "center_y":.5}
-        elevation: 15
-        #md_bg_color: [229/255, 204/255, 255/255,1]
-        padding: 25
-        spacing: 25
-        orientation: 'vertical'
+    FloatLayout:
 
         MDLabel:
             id: create_account_label 
@@ -114,6 +106,8 @@ WindowManager:
             font_size: 20
             halign: "center"
             size_hint_y: None
+            pos_hint: {'center_x': .5, 'y': .8}
+            size_hint: (.9,.2)
             height: self.texture_size[1]
             
 
@@ -125,7 +119,8 @@ WindowManager:
             size_hint_x: None
             width: 200
             font_size: 12
-            pos_hint: {'center_x': 0.5}
+            pos_hint: {'center_x': 0.5, 'y': 0.8}
+            size_hint: (.9,.2)
             
         MDTextField:
             id: last_name
@@ -135,7 +130,8 @@ WindowManager:
             size_hint_x: None
             width: 200
             font_size: 12
-            pos_hint: {'center_x': 0.5}
+            pos_hint: {'center_x': 0.5, 'y': 0.7}
+            size_hint: (.9,.2)
 
         MDTextField:
             id: email
@@ -145,7 +141,8 @@ WindowManager:
             size_hint_x: None
             width: 200
             font_size: 12
-            pos_hint: {'center_x': 0.5}
+            pos_hint: {'center_x': 0.5, 'y': 0.7}
+            size_hint: (.9,.2)
 
         MDTextField:
             id: password
@@ -154,7 +151,8 @@ WindowManager:
             mode: "round"
             width: 200
             font_size: 12
-            pos_hint: {"center_x": 0.5}
+            pos_hint: {'center_x': 0.5, 'y': 0.6}
+            size_hint: (.9,.2)
             password: True
 
         MDTextField:
@@ -164,37 +162,36 @@ WindowManager:
             mode: "round"
             width: 200
             font_size: 12
-            pos_hint: {"center_x": 0.5}
+            pos_hint: {'center_x': 0.5, 'y': 0.5}
+            size_hint: (.9,.2)
             password: True
 
         MDFlatButton:
+        Button:
             text: "Create Account"
-            font_size: 12
-            pos_hint: {"center_x": 0.5}
+            font_size: 16
+            background_color: (0/255, 239/255, 255/255)
+            pos_hint: {'center_x': 0.5, 'y': 0.3}
+            size_hint: (.9,.2)
             on_release: 
                 #app.email_exist()
                 app.create_account()
                 #app.root.current= "login"
                 #root.manager.transition.direction = "left"
-        MDFlatButton:
+
+        Button:
             text: "Back"
-            font_size: 12
-            pos_hint: {"center_x": 0.5}
+            font_size: 16
+            background_color: (0/255, 239/255, 255/255)
+            pos_hint: {'center_x': 0.5, 'y': 0.2}
+            size_hint: (.9,.2)
             on_release: 
                 app.root.current= "login"
                 root.manager.transition.direction = "left"
 
 <MainMenuWindow>:
     name:"main menu"
-    MDCard:
-        size_hint: (1, 1)
-        size: 300, 400
-        pos_hint: {"center_x": .5, "center_y":.5}
-        elevation: 15
-        #md_bg_color: [229/255, 204/255, 255/255,1]
-        padding: 25
-        spacing: 25
-        orientation: 'vertical'
+    FloatLayout:
 
         Image:
             source: 'PerioLogo.png'
@@ -243,7 +240,7 @@ WindowManager:
             bold: True
             background_color: (0/255, 239/255, 255/255)
             pos_hint: {'x': .9,'y': .9}
-            size_hint: (.1,.1) 
+            size_hint: (.3,.1) 
             on_release: 
                 app.root.current= "login"
                 root.manager.transition.direction = "right"
@@ -251,8 +248,8 @@ WindowManager:
 
 <TestInstructionsWindow>:
     name: "test instructions"
-    MDCard:
-        orientation: "vertical"
+    FloatLayout:
+    
         MDLabel:
             text:"Instructions for Test:" 
             bold: True
