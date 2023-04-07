@@ -107,7 +107,7 @@ WindowManager:
             halign: "center"
             size_hint_y: 0.08
             pos_hint: {'center_x': .5, 'y': .95}
-            size_hint: (.9,.1)
+            size_hint: (.8,.1)
             height: self.texture_size[1]
             
 
@@ -120,7 +120,7 @@ WindowManager:
             width: 200
             font_size: 30
             pos_hint: {'center_x': 0.5, 'y': 0.8}
-            size_hint: (.9,.1)
+            size_hint: (.8,.1)
             
         MDTextField:
             id: last_name
@@ -131,7 +131,7 @@ WindowManager:
             width: 200
             font_size: 30
             pos_hint: {'center_x': 0.5, 'y': 0.7}
-            size_hint: (.9,.1)
+            size_hint: (.8,.1)
 
         MDTextField:
             id: email
@@ -142,7 +142,7 @@ WindowManager:
             width: 200
             font_size: 30
             pos_hint: {'center_x': 0.5, 'y': 0.6}
-            size_hint: (.9,.1)
+            size_hint: (.8,.1)
 
         MDTextField:
             id: password
@@ -152,7 +152,7 @@ WindowManager:
             width: 200
             font_size: 
             pos_hint: {'center_x': 0.5, 'y': 0.5}
-            size_hint: (.9,.1)
+            size_hint: (.8,.1)
             password: True
 
         MDTextField:
@@ -163,7 +163,7 @@ WindowManager:
             width: 200
             font_size: 30
             pos_hint: {'center_x': 0.5, 'y': 0.4}
-            size_hint: (.9,.1)
+            size_hint: (.8,.1)
             password: True
 
         MDFlatButton:
@@ -172,7 +172,7 @@ WindowManager:
             font_size: 40
             background_color: (0/255, 239/255, 255/255)
             pos_hint: {'center_x': 0.5, 'y': 0.15}
-            size_hint: (.9,.1)
+            size_hint: (.8,.1)
             on_release: 
                 #app.email_exist()
                 app.create_account()
@@ -184,7 +184,7 @@ WindowManager:
             font_size: 40
             background_color: (0/255, 239/255, 255/255)
             pos_hint: {'center_x': 0.5, 'y': 0.05}
-            size_hint: (.9,.1)
+            size_hint: (.8,.1)
             on_release: 
                 app.root.current= "login"
                 root.manager.transition.direction = "left"
@@ -214,7 +214,7 @@ WindowManager:
             font_size: 16
             bold: True
             background_color: (0/255, 239/255, 255/255)
-            pos_hint: {'center_x': .5,'y': .15}
+            pos_hint: {'center_x': .5,'y': .25}
             size_hint: (.8,.1)
             on_release: 
                 app.root.current= "test instructions"
@@ -226,7 +226,7 @@ WindowManager:
             font_size: 16
             bold: True
             background_color: (0/255, 239/255, 255/255)
-            pos_hint: {'center_x': .5,'y': .05}
+            pos_hint: {'center_x': .5,'y': .15}
             size_hint: (.8,.1) 
             on_release: 
                 app.root.current= "results"
@@ -239,8 +239,8 @@ WindowManager:
             font_size: 16
             bold: True
             background_color: (0/255, 239/255, 255/255)
-            pos_hint: {'x': .1,'y': .95}
-            size_hint: (.3,.1) 
+            pos_hint: {'center_x': .5,'y': .05}
+            size_hint: (.8,.1) 
             on_release: 
                 app.root.current= "login"
                 root.manager.transition.direction = "right"
@@ -253,7 +253,7 @@ WindowManager:
         MDLabel:
             text:"Instructions for Test:" 
             bold: True
-            font_size: 30
+            font_size: 40
             halign: "center"
             pos_hint: {"center_x": .5, "y":.8}
             size_hint: .8, .2
@@ -263,7 +263,7 @@ WindowManager:
             bold: False
             font_size: 16
             halign: "center"
-            pos_hint: {"center_x": .5, "y":.7} 
+            pos_hint: {"center_x": .5, "y":.5} 
             size_hint: .8, .4
 
     Button:
@@ -276,21 +276,63 @@ WindowManager:
         on_release:
             app.root.current = "camera"
             root.manager.transition.direction = "left"
-            app.add_camera()
+            # app.add_camera()
 
 <CameraWindow>:
     name: "camera" 
     FloatLayout:
         background_color: (255, 255, 255)
-        AnchorLayout:
-            id: camera_layout
-            size_hint: (.95, 1)
+        # AnchorLayout:
+        #     id: camera_layout
+        #     size_hint: (.95, 1)
+
+        # MDFloatingActionButton:
+        #     icon: "camera"
+        #     pos_hint: {"center_x": .5, "y": .05}
+        #     on_release: 
+        #         app.root.current = 'results'
+        #         app.color_analysis()
+        #         app.add_datatable()
+
+        # MDFloatingActionButton:
+        #     icon: 'arrow-left'
+        #     pos_hint: {'x': .1, 'y': .05}
+        #     on_release: app.root.current = 'main menu'
+       
+       
+        # canvas:
+        #     Color:
+        #         rgba: 0, 0, 1, 1
+            
+        #     Camera:
+        #         id: camera
+        #         resolution: (5375, 2419)
+        #         pos_hint: {'center_x': .5,'center_y': .5}
+        #         size_hint: (.9, .9)
+        #         play: True
+
+        #     Rectangle:
+        #         size: (10,10)
+        #         pos: self.pos
+
+        Camera:
+            id: camera
+            resolution: (5375, 2419)
+            pos_hint: {'center_x': .5,'center_y': .5}
+            size_hint: (.9, .9)
+            play: True
+
+        Image:
+            source: 'blue-crosshair-target.png'
+            pos_hint: {"center_x": .5, "center_y":.5}
+            size_hint: .1, .1
 
         MDFloatingActionButton:
             icon: "camera"
             pos_hint: {"center_x": .5, "y": .05}
             on_release: 
                 app.root.current = 'results'
+                app.capture()
                 app.color_analysis()
                 app.add_datatable()
 

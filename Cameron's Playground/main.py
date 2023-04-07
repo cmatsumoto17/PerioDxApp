@@ -18,6 +18,8 @@ from kivy.config import Config
 
 import cv2
 
+
+
 from cryptography.fernet import Fernet
 import bcrypt
 
@@ -329,11 +331,16 @@ class MainApp(MDApp):
         
         cv2.destroyAllWindows()
         
+    def capture(self):
+        camera = self.root.ids.camera_scr.ids['camera']
+        camera.export_to_png("test_picture.png")
+        print("Captured")
+        
     def color_analysis(self):
-        image_name = "test_picture.png"
+        # image_name = "test_picture.png"
                 
-        # write image to file
-        cv2.imwrite(image_name, self.image_frame)        
+        # # write image to file
+        # cv2.imwrite(image_name, self.image_frame)        
         
         #compute pixel value at center of captured image
         img = cv2.imread("test_picture.png")
