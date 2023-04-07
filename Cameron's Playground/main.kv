@@ -46,7 +46,7 @@ WindowManager:
             mode: "round"
             size_hint_x: None
             width: 200
-            font_size: 18
+            font_size: 30
             pos_hint: {'center_x': .5,'y': .5}
             size_hint: (.8,.1)
             on_text_validate:  pwd_field.focus =true
@@ -63,7 +63,7 @@ WindowManager:
             icon_right: "eye-off"
             mode: "round"
             width: 200
-            font_size: 18
+            font_size: 30
             pos_hint: {'center_x': .5,'y': .3}
             size_hint: (.8,.1)
             password: True
@@ -76,7 +76,7 @@ WindowManager:
             size_hint: (.8,.1)
         Button:
             text: "Log In"
-            font_size: 16
+            font_size: 40
             background_color: (0/255, 239/255, 255/255)
             pos_hint: {'center_x': .5,'y': .15}
             size_hint: (.8,.1)
@@ -86,7 +86,7 @@ WindowManager:
 
         Button:
             text: "Create An Account"
-            font_size: 16
+            font_size: 40
             background_color: (0/255, 239/255, 255/255)
             pos_hint: {'center_x': .5,'y': 0}
             size_hint: (.8,.1)
@@ -103,11 +103,11 @@ WindowManager:
         MDLabel:
             id: create_account_label 
             text:"Create An Account"
-            font_size: 20
+            font_size: 40
             halign: "center"
             size_hint_y: 0.08
-            pos_hint: {'center_x': .5, 'y': .8}
-            size_hint: (.9,.2)
+            pos_hint: {'center_x': .5, 'y': .95}
+            size_hint: (.9,.1)
             height: self.texture_size[1]
             
 
@@ -118,7 +118,7 @@ WindowManager:
             mode: "round"
             size_hint_x: None
             width: 200
-            font_size: 12
+            font_size: 30
             pos_hint: {'center_x': 0.5, 'y': 0.8}
             size_hint: (.9,.1)
             
@@ -129,7 +129,7 @@ WindowManager:
             mode: "round"
             size_hint_x: None
             width: 200
-            font_size: 12
+            font_size: 30
             pos_hint: {'center_x': 0.5, 'y': 0.7}
             size_hint: (.9,.1)
 
@@ -140,8 +140,8 @@ WindowManager:
             mode: "round"
             size_hint_x: None
             width: 200
-            font_size: 12
-            pos_hint: {'center_x': 0.5, 'y': 0.7}
+            font_size: 30
+            pos_hint: {'center_x': 0.5, 'y': 0.6}
             size_hint: (.9,.1)
 
         MDTextField:
@@ -150,8 +150,8 @@ WindowManager:
             icon_right: "eye-off"
             mode: "round"
             width: 200
-            font_size: 12
-            pos_hint: {'center_x': 0.5, 'y': 0.6}
+            font_size: 
+            pos_hint: {'center_x': 0.5, 'y': 0.5}
             size_hint: (.9,.1)
             password: True
 
@@ -161,17 +161,17 @@ WindowManager:
             icon_right: "eye-off"
             mode: "round"
             width: 200
-            font_size: 12
-            pos_hint: {'center_x': 0.5, 'y': 0.5}
+            font_size: 30
+            pos_hint: {'center_x': 0.5, 'y': 0.4}
             size_hint: (.9,.1)
             password: True
 
         MDFlatButton:
         Button:
             text: "Create Account"
-            font_size: 16
+            font_size: 40
             background_color: (0/255, 239/255, 255/255)
-            pos_hint: {'center_x': 0.5, 'y': 0.3}
+            pos_hint: {'center_x': 0.5, 'y': 0.15}
             size_hint: (.9,.1)
             on_release: 
                 #app.email_exist()
@@ -181,9 +181,9 @@ WindowManager:
 
         Button:
             text: "Back"
-            font_size: 16
+            font_size: 40
             background_color: (0/255, 239/255, 255/255)
-            pos_hint: {'center_x': 0.5, 'y': 0.2}
+            pos_hint: {'center_x': 0.5, 'y': 0.05}
             size_hint: (.9,.1)
             on_release: 
                 app.root.current= "login"
