@@ -67,7 +67,7 @@ WindowManager:
             pos_hint: {'center_x': .5,'y': .3}
             size_hint: (.8,.1)
             password: True
-            on_text_validate: root.check_password()
+            on_text_validate: app.check_password()
         MDLabel:
             id: error
             text: ""
@@ -105,7 +105,7 @@ WindowManager:
             text:"Create An Account"
             font_size: 20
             halign: "center"
-            size_hint_y: None
+            size_hint_y: 0.08
             pos_hint: {'center_x': .5, 'y': .8}
             size_hint: (.9,.2)
             height: self.texture_size[1]
@@ -120,7 +120,7 @@ WindowManager:
             width: 200
             font_size: 12
             pos_hint: {'center_x': 0.5, 'y': 0.8}
-            size_hint: (.9,.2)
+            size_hint: (.9,.1)
             
         MDTextField:
             id: last_name
@@ -131,7 +131,7 @@ WindowManager:
             width: 200
             font_size: 12
             pos_hint: {'center_x': 0.5, 'y': 0.7}
-            size_hint: (.9,.2)
+            size_hint: (.9,.1)
 
         MDTextField:
             id: email
@@ -142,7 +142,7 @@ WindowManager:
             width: 200
             font_size: 12
             pos_hint: {'center_x': 0.5, 'y': 0.7}
-            size_hint: (.9,.2)
+            size_hint: (.9,.1)
 
         MDTextField:
             id: password
@@ -152,7 +152,7 @@ WindowManager:
             width: 200
             font_size: 12
             pos_hint: {'center_x': 0.5, 'y': 0.6}
-            size_hint: (.9,.2)
+            size_hint: (.9,.1)
             password: True
 
         MDTextField:
@@ -163,7 +163,7 @@ WindowManager:
             width: 200
             font_size: 12
             pos_hint: {'center_x': 0.5, 'y': 0.5}
-            size_hint: (.9,.2)
+            size_hint: (.9,.1)
             password: True
 
         MDFlatButton:
@@ -172,7 +172,7 @@ WindowManager:
             font_size: 16
             background_color: (0/255, 239/255, 255/255)
             pos_hint: {'center_x': 0.5, 'y': 0.3}
-            size_hint: (.9,.2)
+            size_hint: (.9,.1)
             on_release: 
                 #app.email_exist()
                 app.create_account()
@@ -184,7 +184,7 @@ WindowManager:
             font_size: 16
             background_color: (0/255, 239/255, 255/255)
             pos_hint: {'center_x': 0.5, 'y': 0.2}
-            size_hint: (.9,.2)
+            size_hint: (.9,.1)
             on_release: 
                 app.root.current= "login"
                 root.manager.transition.direction = "left"
@@ -239,7 +239,7 @@ WindowManager:
             font_size: 16
             bold: True
             background_color: (0/255, 239/255, 255/255)
-            pos_hint: {'x': .9,'y': .9}
+            pos_hint: {'x': .1,'y': .95}
             size_hint: (.3,.1) 
             on_release: 
                 app.root.current= "login"
@@ -249,7 +249,7 @@ WindowManager:
 <TestInstructionsWindow>:
     name: "test instructions"
     FloatLayout:
-    
+
         MDLabel:
             text:"Instructions for Test:" 
             bold: True
