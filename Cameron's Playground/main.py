@@ -28,7 +28,15 @@ from datetime import date
 import sqlite3
 import re
 
+#give Android permissions
+#comment out if running on PC
+from android.permissions import request_permissions, Permission
 
+request_permissions([
+    Permission.Camera,
+    Permission.WRITE_EXTERNAL_STORAGE,
+    Permission.READ_EXTERNAL_STORAGE
+])
 
 #set screen size
 Config.set('graphics', 'resizeable', False)
