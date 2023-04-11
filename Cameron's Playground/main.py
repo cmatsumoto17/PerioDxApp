@@ -1,5 +1,9 @@
 
 import kivy
+import sqlite3
+import re
+import cv2
+import os
 
 from kivy.lang import Builder
 from kivy.uix.widget import Widget
@@ -15,9 +19,9 @@ from kivy.metrics import dp
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import NumericProperty, ListProperty,StringProperty, ObjectProperty
 from kivy.config import Config
-
-import cv2
-
+from kivy.utils import platform
+from kivy.logger import Logger
+from jnius import autoclass
 
 
 from cryptography.fernet import Fernet
@@ -25,18 +29,21 @@ import bcrypt
 
 from datetime import date
 
-import sqlite3
-import re
+
 
 #give Android permissions
 #comment out if running on PC
-from android.permissions import request_permissions, Permission
+# from android.permissions import request_permissions, Permission
+# from android.storage import app_storage_path
+# settings_path = app_storage_path()
 
-request_permissions([
-    Permission.Camera,
-    Permission.WRITE_EXTERNAL_STORAGE,
-    Permission.READ_EXTERNAL_STORAGE
-])
+# request_permissions([
+#     Permission.CAMERA,
+#     Permission.WRITE_EXTERNAL_STORAGE,
+#     Permission.READ_EXTERNAL_STORAGE
+#     Permission.WRITE_INTERNAL_STORAGE,
+#     Permission.READ_INTERNAL_STORAGE
+# ])
 
 #set screen size
 Config.set('graphics', 'resizeable', False)
@@ -341,8 +348,24 @@ class MainApp(MDApp):
         
     def capture(self):
         camera = self.root.ids.camera_scr.ids['camera']
-        camera.export_to_png("test_picture.png")
+        
         print("Captured")
+        
+        if platform == 'android':
+            Environment = autoclass('android.os.Environment')
+            dir_path = Environment.getExternalStorageDirectory().getAbsolutePath()
+            
+            save_dir = os.path.join(dir_path, 'PerioApp')
+            if not os.path.exists(save_dir):
+                os.makedirs(save_dir)
+                
+            file_path = os.path.join(save_dir, 'test_picture.png')
+            
+            camera.export_to_png("test_picture.png")
+            Logger.info('Picture saved to %s' % file_path)
+        
+        else:
+            Logger.warning('Saving pictures is supported only on Android devices.')  
         
     def color_analysis(self):
         # image_name = "test_picture.png"
