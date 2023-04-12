@@ -49,7 +49,7 @@ WindowManager:
             font_size: 30
             pos_hint: {'center_x': .5,'y': .5}
             size_hint: (.8,.1)
-            on_text_validate:  pwd_field.focus = True;
+            #on_text_validate:  password.focus = True;
 
         MDLabel:
             id: blank
@@ -343,7 +343,7 @@ WindowManager:
             on_release: 
                 app.root.current = 'results'
                 app.capture()
-                app.color_analysis()
+                #app.color_analysis()
                 app.add_datatable()
 
         MDFloatingActionButton:

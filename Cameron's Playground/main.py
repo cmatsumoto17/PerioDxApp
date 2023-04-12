@@ -4,6 +4,7 @@ import sqlite3
 import re
 import cv2
 import os
+import numpy as np
 
 from kivy.lang import Builder
 from kivy.uix.widget import Widget
@@ -21,7 +22,7 @@ from kivy.properties import NumericProperty, ListProperty,StringProperty, Object
 from kivy.config import Config
 from kivy.utils import platform
 from kivy.logger import Logger
-from jnius import autoclass
+#from jnius import autoclass
 
 
 from cryptography.fernet import Fernet
@@ -326,102 +327,66 @@ class MainApp(MDApp):
         self.capture = cv2.VideoCapture(0)
         Clock.schedule_interval(self.load_video, 1.0/30.0)
                 
-    def load_video(self, *args):
-        ret, frame = self.capture.read()
-        # Frame initialize
-        self.image_frame = frame
-        
-        #calculate the center of the image
-        height, width, _ = self.image_frame.shape
-        cx = int (width / 2)
-        cy = int (height / 2)
-        
-        # put dot in center of image
-        cv2.circle(self.image_frame, (cx, cy), 3, (255,0,0), 3)
-        
-        buffer = cv2.flip(frame, 0).tostring()
-        texture = Texture.create(size=(frame.shape[1], frame.shape[0]), colorfmt='bgr')
-        texture.blit_buffer(buffer, colorfmt='bgr', bufferfmt='ubyte')
-        self.img.texture = texture
-        
-        cv2.destroyAllWindows()
         
     def capture(self):
         camera = self.root.ids.camera_scr.ids['camera']
+        img = camera.texture
         
-        print("Captured")
-        
-        if platform == 'android':
-            Environment = autoclass('android.os.Environment')
-            dir_path = Environment.getExternalStorageDirectory().getAbsolutePath()
-            
-            save_dir = os.path.join(dir_path, 'PerioApp')
-            if not os.path.exists(save_dir):
-                os.makedirs(save_dir)
-                
-            file_path = os.path.join(save_dir, 'test_picture.png')
-            
-            camera.export_to_png("test_picture.png")
-            Logger.info('Picture saved to %s' % file_path)
-        
-        else:
-            Logger.warning('Saving pictures is supported only on Android devices.')  
-        
-    def color_analysis(self):
-        # image_name = "test_picture.png"
-                
-        # # write image to file
-        # cv2.imwrite(image_name, self.image_frame)        
-        
-        #compute pixel value at center of captured image
-        img = cv2.imread("test_picture.png")
-        
-        # convert image pixel values to RGB format
-        rgb_frame = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        
-        # get the size of the image
-        height, width, _= img.shape
-        
-        cx = int(width/2)
-        cy = int(height/2)
-        
-        # select pixel value
-        pixel_center = rgb_frame[cy, cx]
-        r = pixel_center[0]
-        g = pixel_center[1]
-        b = pixel_center[2]
-        
-        concentration = None
-        
-        if g > 170:
-            concentration = "LOW"
-        elif g > 85:
-            concentration = "MED"
-        elif g > 0:
-            concentration = "HIGH" 
-        else:
-            concentration = "Error"
-            
-        
-        timestamp = str(date.today())
-        test_Results =  timestamp + " " + concentration + " " + str(r) + " " + str(g) + " " + str(b) + "\n"
-        
-        
-        #INSERT DATA INTO DATABASE
-        # create database or connect to one
-        # connection = sqlite3.connect('enc_database.db')
+        if img is not None:
+            img = img.pixels
+            img = np.frombuffer(img, dtype=np.uint8)
+            img = img.reshape(camera.texture_size[1], camera.texture_size[0], -1)
+            rgb_frame = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-        # # create a cursor
-        # c = connection.cursor()
-        
-        # c.execute("INSERT INTO patients VALUES(date,r,g,b)",(timestamp, r, g, b))
+            # get the size of the image
+            height, width, _ = rgb_frame.shape
 
+            cx = int(width / 2)
+            cy = int(height / 2)
+
+            # select pixel value
+            pixel_center = rgb_frame[cy, cx]
+            r = pixel_center[2]
+            g = pixel_center[1]
+            b = pixel_center[1]
+
+            print(f"RGB values at center: ({r}, {g}, {b})")
+            
+            concentration = None
+            
+            if g > 170:
+                concentration = "LOW"
+            elif g > 85:
+                concentration = "MED"
+            elif g > 0:
+                concentration = "HIGH" 
+            else:
+                concentration = "Error"
+                
+            
+            timestamp = str(date.today())
+            test_Results =  timestamp + " " + concentration + " " + str(r) + " " + str(g) + " " + str(b) + "\n"
+            
+            
+            #INSERT DATA INTO DATABASE
+            # create database or connect to one
+            # connection = sqlite3.connect('enc_database.db')
+
+            # # create a cursor
+            # c = connection.cursor()
+            
+            # c.execute("INSERT INTO patients VALUES(date,r,g,b)",(timestamp, r, g, b))
+
+            
+            #INSERT DATA INTO TXT FILE
+            file = open("Test_Results.txt", "a")
+            file.write(test_Results)
+            
+            file.close()
+        else:
+            print("No image captured")
         
-        #INSERT DATA INTO TXT FILE
-        file = open("Test_Results.txt", "a")
-        file.write(test_Results)
-        
-        file.close()
+    
         
         
     def add_datatable(self):
