@@ -1,6 +1,12 @@
+### Summary: ###
+# main.py contains all functions need to build PerioDx App 
 
+### Authors: ###
+# Camerson Mastumoto
+# Joy Niu
+
+### Imports ###
 import kivy
-
 from kivy.lang import Builder
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
@@ -11,277 +17,359 @@ from kivy.uix.image import Image
 from kivymd.uix.datatables import MDDataTable
 from kivy.clock import Clock
 from kivymd.uix.label import MDLabel
+from kivy.uix.label import Label
 from kivy.metrics import dp
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import NumericProperty, ListProperty,StringProperty, ObjectProperty
 from kivy.config import Config
-
 import cv2
-
+from cryptography.fernet import Fernet
+import bcrypt
 from datetime import date
-
 import sqlite3
 import re
+import pyrebase
+from kivy.config import Config
+from kivy.utils import platform
+from kivy.logger import Logger
+import os
+import numpy as np
 
-
-
-#set screen size
+### Set Screen Size ###
 Config.set('graphics', 'resizeable', False)
-Config.set('graphics', 'width', 200)# different screens
+Config.set('graphics', 'width', 200) # different screens
 
-### Create the classes for each window ###
-
-# login page
+### All Classes for Windows and WindowManager ###
 class LoginWindow(Screen):
     pass
-# main menu window
 class MainMenuWindow(Screen):
-    pass
-# create account window
+    def __init__(self, **kwargs):
+        super(MainMenuWindow, self).__init__(**kwargs)
+        
+        self.add_widget(Label(text='Welcome!'))
 class CreateAccountWindow(Screen):
     pass
-#create test instructions window
 class TestInstructionsWindow(Screen):
-    pass
-#create camera window
+    pass 
 class CameraWindow(Screen):
     pass
-#create results window
 class ResultsWindow(Screen):
     pass
-         
-# window manager
-class WindowManager(ScreenManager):
+class TestResultsWindow(Screen):
     pass
+class WindowManager(ScreenManager):
+    LoginWindow = ObjectProperty(None)
+    MainMenuWindow = ObjectProperty(None)
 
-
-### Creates the GUI ###
 class MainApp(MDApp):
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.data_tables = None
-        
-    # builds gui
+
     def build(self):
+
         self.theme_cls.theme_style = "Light"
         self.theme_cls.primary_palette = "BlueGray"
+    
+    def login(self):
 
-        # create database or connect to one
-        connection = sqlite3.connect('test_database.db')
+        # user input from text fields
+        email = self.root.ids.login_scr.ids.email.text
+        password = self.root.ids.login_scr.ids.password.text
 
-        # create a cursor
-        c = connection.cursor()
+        # database configuration
+        config = {
+            "apiKey": "AIzaSyDg9UeV34LMRRBnvKukniuZZregaDhnrHs",
+            "authDomain": "periodxapp.firebaseapp.com",
+            "projectId": "periodxapp",
+            "storageBucket": "periodxapp.appspot.com",
+            "messagingSenderId": "1080188099101",
+            "appId": "1:1080188099101:web:981944e07511a572ffc4f4",
+            "measurementId": "G-YDJGGTR14X",
+            "databaseURL" : "https://periodxapp-default-rtdb.firebaseio.com/"
+        }
 
-        # create a table
-        c.execute(""" CREATE TABLE if not exists patients(
-            first_name TEXT,
-            last_name TEXT, 
-            email TEXT,
-            password TEXT)
-            """)
+        # initializing app
+        firebase = pyrebase.initialize_app(config)
 
-        # commit the changes
-        connection.commit()
+        # reference the databases
+        db = firebase.database()
 
-        # close the connections
-        connection.close()
+        # temp variable for finding patient
+        found_patient = None
+
+        # loops through all the patients in Patient DB
+        for patient in db.child("Patients").get().each():
+
+            # checking database information again user input from text fields
+            if patient.val().get("Patient Information",{}).get("email") == email and patient.val().get("Patient Information",{}).get("password") == password:
+                found_patient = patient.val()
+            # user's information matches
+        if found_patient:
+            print("login successful")
+            self.root.current = "main menu"
+            return email
         
-# Builder.load_file('main.kv')
-
-    def check_email(self):
-        # check email pattern
-        email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
-        if(self.root.ids.create_account_scr.ids.email.text == ''):
-            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty email address text field'
-            return 0
-        elif(email_pattern != self.root.ids.create_account_scr.ids.email.text):
-        
-            # validity email error message
-            self.root.ids.create_account_scr.ids.create_account_label.text = f'Please enter a valid email address'
-            return 0
-
-        #TODO check if the email exists in the database
+        # user's information failed
         else:
-            return self.root.ids.create_account_scr.ids.email.text
-            
-
-    def check_password(self):
-        password_pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
-        if(self.root.ids.create_account_scr.ids.password.text == ''):
-            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty password field'
-            return 0
-
-        elif(self.root.ids.create_account_scr.ids.password_verification.text == ''):
-            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty password verification field'
-            return 0
-
-        elif(re.match(password_pattern,self.root.ids.create_account_scr.ids.password.text)):
-            if(self.root.ids.create_account_scr.ids.password.text == self.root.ids.create_account_scr.ids.password_verification.text):
-                
-                print(self.root.ids.create_account_scr.ids.password.text)
-                return self.root.ids.create_account_scr.ids.password.text
-                
-            else:
-                # password don't match error message
-                self.root.ids.create_account_scr.ids.create_account_label.text = f'Passwords Do Not Match'
-                return 0
-            
-        else:
-            self.root.ids.create_account_scr.ids.create_account_label.text = f'Please enter a password thats a minimum length of 8, at least one uppercase letter, at least one lowercase letter, at least one digit, at least one specicial character'
-            return 0
+            self.root.ids.login_scr.ids.email.text == ''
+            self.root.ids.login_scr.ids.password.text == ''
+            self.root.ids.login_scr.ids.error.text = f'Incorrect Credentials'
+            return False
 
     def create_account(self):
-        password_pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
-        email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
-        
-        if(self.root.ids.create_account_scr.ids.first_name.text == ''):
-            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty first name field'
-        elif(self.root.ids.create_account_scr.ids.last_name.text == ''):
-            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty last name field'
-        elif(self.root.ids.create_account_scr.ids.email.text == ''):
-            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty email address field'
-        
-        
-        
-        elif(not(re.match(email_pattern, self.root.ids.create_account_scr.ids.email.text))):
-            self.root.ids.create_account_scr.ids.email.text = ''
-            self.root.ids.create_account_scr.ids.create_account_label.text = f'Please enter a valid email address'
-        #TODO check if the email exists in the database
-        elif(self.root.ids.create_account_scr.ids.password.text == ''):
-            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty password field'
+            config = {
+                "apiKey": "AIzaSyDg9UeV34LMRRBnvKukniuZZregaDhnrHs",
+                "authDomain": "periodxapp.firebaseapp.com",
+                "projectId": "periodxapp",
+                "storageBucket": "periodxapp.appspot.com",
+                "messagingSenderId": "1080188099101",
+                "appId": "1:1080188099101:web:981944e07511a572ffc4f4",
+                "measurementId": "G-YDJGGTR14X",
+                "databaseURL" : "https://periodxapp-default-rtdb.firebaseio.com/"
+            }
 
-        elif(not(re.match(password_pattern,self.root.ids.create_account_scr.ids.password.text))):
-            self.root.ids.create_account_scr.ids.create_account_label.text = f'Please enter a password thats a minimum length of 8, at least one uppercase letter, at least one lowercase letter, at least one digit, at least one special character'
-        elif(self.root.ids.create_account_scr.ids.password_verification.text == ''):
-            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty password verification field'
-        elif(self.root.ids.create_account_scr.ids.password.text != self.root.ids.create_account_scr.ids.password_verification.text):
-            # password don't match error message
-            self.root.ids.create_account_scr.ids.create_account_label.text = f'Passwords Do Not Match' 
-        else:
+            # initializing app
+            firebase = pyrebase.initialize_app(config)
+
+            # reference the databases
+            db = firebase.database()
+
+            # variables needed
+            # e = self.root.ids.create_account_scr.ids.email.text
+            password_pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" #!Q1w2e3r4 
+            email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+        
+            # empty first or last name
+            if(self.root.ids.create_account_scr.ids.first_name.text == ''):
+                self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty first name field'
+            elif(self.root.ids.create_account_scr.ids.last_name.text == ''):
+                self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty last name field'
+            elif(self.root.ids.create_account_scr.ids.email.text == ''):
+                self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty email address field'
+            
+            # invalid email address
+            elif(not(re.match(email_pattern, self.root.ids.create_account_scr.ids.email.text))):
+                self.root.ids.create_account_scr.ids.email.text = ''
+                self.root.ids.create_account_scr.ids.create_account_label.text = f'Please enter a valid email address'
+
+            # check if the email exists in the database
+            query = db.child("Patients").order_by_child("email").equal_to(self.root.ids.create_account_scr.ids.email.text).get()
+            if query.each():
+                self.root.ids.create_account_scr.ids.email.text = ''
+                self.root.ids.create_account_scr.ids.create_account_label.text = f'Email Already Exists'
+
+            # empty password field
+            elif(self.root.ids.create_account_scr.ids.password.text == ''):
+                self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty password field'
+
+            # invalid password
+            elif(not(re.match(password_pattern,self.root.ids.create_account_scr.ids.password.text))):
+                self.root.ids.create_account_scr.ids.create_account_label.text = f'Please enter a password thats a minimum length of 8, at least one uppercase letter, at least one lowercase letter, at least one digit, at least one special character'
+            
+            # empty password verification field 
+            elif(self.root.ids.create_account_scr.ids.password_verification.text == ''):
+                self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty password verification field'
+            
+            # checking password and password verification
+            elif(self.root.ids.create_account_scr.ids.password.text != self.root.ids.create_account_scr.ids.password_verification.text):
+                # password don't match error message
+                self.root.ids.create_account_scr.ids.create_account_label.text = f'Passwords Do Not Match' 
+            
+            # create an account
+            else:
+
+                # adding patient
+                first_name = self.root.ids.create_account_scr.ids.first_name.text
+                last_name = self.root.ids.create_account_scr.ids.last_name.text
+                email = self.root.ids.create_account_scr.ids.email.text
+                password = self.root.ids.create_account_scr.ids.password.text
+
+                # hashing password
+                pass_bytes = password.encode('utf-8')
+                salt = bcrypt.gensalt()
+                hash_pass = bcrypt.hashpw(pass_bytes, salt)
+
+                patient_data = {
+                    "first_name": first_name,
+                    "last_name": last_name,
+                    "email": email,
+                    "password": hash_pass.decode('utf-8')
+                }
+                clean_email = email.replace('.', '').replace('@', '')
+                db.child("Patients").child(clean_email).child("Patient Information").set(patient_data)
+                # c.execute("INSERT INTO patients VALUES(?,?,?,?)",(first_name,last_name,email,password))
+
+                # add a little message
+                self.root.ids.create_account_scr.ids.create_account_label.text = f'{first_name} {last_name} Account Created '
+
+
+                # clear the text fields
+                self.root.ids.create_account_scr.ids.first_name.text = ''
+                self.root.ids.create_account_scr.ids.last_name.text = ''
+                self.root.ids.create_account_scr.ids.email.text = ''
+                self.root.ids.create_account_scr.ids.password.text = ''
+                self.root.ids.create_account_scr.ids.password_verification.text = ''
+            
+                return Builder.load_file('main.kv')
+            
+    def capture(self):
+        camera = self.root.ids.camera_scr.ids['camera']
+        img = camera.texture
+        
+        if img is not None:
+            img = img.pixels
+            img = np.frombuffer(img, dtype=np.uint8)
+            img = img.reshape(camera.texture_size[1], camera.texture_size[0], -1)
+            rgb_frame = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+            # get the size of the image
+            height, width, _ = rgb_frame.shape
+
+            cx = int(width / 2)
+            cy = int(height / 2)
+
+            # select pixel value
+            pixel_center = rgb_frame[cy, cx]
+            r = pixel_center[2]
+            g = pixel_center[1]
+            b = pixel_center[1]
+
+            print(f"RGB values at center: ({r}, {g}, {b})")
+            
+            concentration = None
+            
+            if g > 200:
+                concentration = "LOW"
+            elif g > 175:
+                concentration = "MED"
+            elif g > 150:
+                concentration = "HIGH" 
+            else:
+                concentration = "Error"
+                
+            
+            timestamp = str(date.today())
+            test_Results =  timestamp + " " + concentration + " " + str(r) + " " + str(g) + " " + str(b) + "\n"
+            
+            
+            #INSERT DATA INTO DATABASE
             # create database or connect to one
-            connection = sqlite3.connect('test_database.db')
+            # connection = sqlite3.connect('enc_database.db')
 
-            # create a cursor
-            c = connection.cursor()
-
-            # adding patient
-            first_name = self.root.ids.create_account_scr.ids.first_name.text
-            last_name = self.root.ids.create_account_scr.ids.last_name.text
-            email = self.root.ids.create_account_scr.ids.email.text
-            password = self.root.ids.create_account_scr.ids.password.text
-            c.execute("INSERT INTO patients VALUES(?,?,?,?)",(first_name,last_name,email,password))
-
-            # add a little message
-            self.root.ids.create_account_scr.ids.create_account_label.text = f'{first_name} {last_name} Account Created '
-
-            # clear the input box
-            self.root.ids.create_account_scr.ids.first_name.text = ''
-            self.root.ids.create_account_scr.ids.last_name.text = ''
-            self.root.ids.create_account_scr.ids.email.text = ''
-            self.root.ids.create_account_scr.ids.password.text = ''
-            self.root.ids.create_account_scr.ids.password_verification.text = ''
-
-            # commit the changes
-            connection.commit()
-
-            # close the connections
-            connection.close()
+            # # create a cursor
+            # c = connection.cursor()
             
-            self.root.current = "main menu"
+            # c.execute("INSERT INTO patients VALUES(date,r,g,b)",(timestamp, r, g, b))
+
             
+            #INSERT DATA INTO TXT FILE
+            file = open("Test_Results.txt", "a")
+            file.write(test_Results)
             
-        
-            return Builder.load_file('main.kv')
-        
-        
-    def add_camera(self):
-        #adding image to screen
-        self.img = Image()
-        self.root.ids.camera_scr.ids.camera_layout.add_widget(self.img)
-        
-        #start video capture
-        self.capture = cv2.VideoCapture(0)
-        Clock.schedule_interval(self.load_video, 1.0/30.0)
-                
-    def load_video(self, *args):
-        ret, frame = self.capture.read()
-        # Frame initialize
-        self.image_frame = frame
-        
-        #calculate the center of the image
-        height, width, _ = self.image_frame.shape
-        cx = int (width / 2)
-        cy = int (height / 2)
-        
-        # put dot in center of image
-        cv2.circle(self.image_frame, (cx, cy), 3, (255,0,0), 3)
-        
-        buffer = cv2.flip(frame, 0).tostring()
-        texture = Texture.create(size=(frame.shape[1], frame.shape[0]), colorfmt='bgr')
-        texture.blit_buffer(buffer, colorfmt='bgr', bufferfmt='ubyte')
-        self.img.texture = texture
-        
-        cv2.destroyAllWindows()
-        
-    def color_analysis(self):
-        image_name = "test_picture.png"
-                
-        # write image to file
-        cv2.imwrite(image_name, self.image_frame)        
-        
-        #compute pixel value at center of captured image
-        img = cv2.imread("test_picture.png")
-        
-        # convert image pixel values to RGB format
-        rgb_frame = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        
-        # get the size of the image
-        height, width, _= img.shape
-        
-        cx = int(width/2)
-        cy = int(height/2)
-        
-        # select pixel value
-        pixel_center = rgb_frame[cy, cx]
-        r = pixel_center[0]
-        g = pixel_center[1]
-        b = pixel_center[2]
-        
-        timestamp = str(date.today())
-        test_Results =  timestamp + " " + str(r) + " " + str(g) + " " + str(b) + "\n"
-        
-        file = open("Test_Results.txt", "a")
-        file.write(test_Results)
-        
-        file.close()
-        
-        
+            file.close()
+        else:
+            print("No image captured")
+        return timestamp, concentration
+
     def add_datatable(self):
+        config = {
+            "apiKey": "AIzaSyDg9UeV34LMRRBnvKukniuZZregaDhnrHs",
+            "authDomain": "periodxapp.firebaseapp.com",
+            "projectId": "periodxapp",
+            "storageBucket": "periodxapp.appspot.com",
+            "messagingSenderId": "1080188099101",
+            "appId": "1:1080188099101:web:981944e07511a572ffc4f4",
+            "measurementId": "G-YDJGGTR14X",
+            "databaseURL" : "https://periodxapp-default-rtdb.firebaseio.com/"
+        }
+
+        # initializing app
+        firebase = pyrebase.initialize_app(config)
+
+        # reference the databases
+        db = firebase.database()
+
+        # obtained variables
+        patient = self.login()
+        clean_email = patient.replace('.', '').replace('@', '')
+        timestamp,_ = self.capture()
+        antibody = "antibody"
+        _, result = self.capture()
+        
+        # organize obtained variables into new result
+        new_result = {
+            "email": patient,
+            "date": timestamp,
+            "antibody": antibody,
+            "result":result
+            }
+        
+        ### creating the correct test result id ###
+        test_results = db.child("Patients").child(clean_email).child("Test Results").get()
+        if test_results.each():
+            last_test_result_id = test_results.each()[-1].key()
+            last_number = int(last_test_result_id.split()[-1])
+            new_number = last_number + 1
+        else:
+            new_number = 1
+        new_test_result_id = f"Test Result {new_number}"
+
+        # Add the new test result to the Firebase Realtime Database
+        
+        db.child("Patients").child(clean_email).child("Test Results").child(new_test_result_id).set(new_result)
+
+    def view_results(self):
+        config = {
+            "apiKey": "AIzaSyDg9UeV34LMRRBnvKukniuZZregaDhnrHs",
+            "authDomain": "periodxapp.firebaseapp.com",
+            "projectId": "periodxapp",
+            "storageBucket": "periodxapp.appspot.com",
+            "messagingSenderId": "1080188099101",
+            "appId": "1:1080188099101:web:981944e07511a572ffc4f4",
+            "measurementId": "G-YDJGGTR14X",
+            "databaseURL" : "https://periodxapp-default-rtdb.firebaseio.com/"
+        }
+
+        # initializing app
+        firebase = pyrebase.initialize_app(config)
+
+        # reference the databases
+        db = firebase.database()
+
+        # obtained variables
+        patient = self.login()
+        clean_email = patient.replace('.', '').replace('@', '')
+
+        # trying to add a table to the screen
         self.data_tables = MDDataTable(
                 size_hint = (0.9, 0.8),
                 rows_num = 20,
                 column_data = [
+                    ("Test Number", dp(30)),
                     ("Date", dp(20)),
-                    ("R", dp(10)), 
-                    ("G", dp(10)),
-                    ("B", dp(10)),
-                ])
+                    ("Antibody", dp(20)), 
+                    ("Result", dp(20))
+                ],)
+        self.root.ids.test_results_scr.ids.data_layout.add_widget(self.data_tables)
         
-        #add rows to table
-        with open("Test_Results.txt", 'r') as results_file:
-            for line in results_file:
-                data = line.split()
-                
-                #PRINT FOR TESTING
-                print(data)
-                
-                self.data_tables.add_row(data)
-                
-        results_file.close()
-        
-        self.root.ids.data_scr.ids.data_layout.add_widget(self.data_tables)
+        for test_result in db.child("Patients").child(clean_email).child("Test Results").get():
+            test_number_id = test_result.key()
+            date = test_result.val().get('date')
+            antibody = test_result.val().get('antibody')
+            result = test_result.val().get('result')
+            data = (test_number_id, date,  antibody, result)
+            self.data_tables.add_row(data)
+
+        # customising test results page with patients full name
+        first_name = db.child("Patients").child(clean_email).child("Patient Information").get().val().get("first_name")
+        last_name = db.child("Patients").child(clean_email).child("Patient Information").get().val().get("last_name")
+        self.root.ids.test_results_scr.ids.title.text = f"{first_name} {last_name}'s Test Results"
         
         
 # runs the app / calls MainApp
 if __name__ == "__main__":
     MainApp().run()
+    
+        
