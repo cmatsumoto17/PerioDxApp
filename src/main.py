@@ -101,9 +101,10 @@ class MainApp(MDApp):
 
         # loops through all the patients in Patient DB
         for patient in db.child("Patients").get().each():
-
+            print(patient.val().get("Patient Information",{}).get("password"))
             # checking database information again user input from text fields
-            if patient.val().get("Patient Information",{}).get("email") == email and patient.val().get("Patient Information",{}).get("password") == password:
+            if patient.val().get("Patient Information",{}).get("email") == email and bcrypt.checkpw(password.encode('utf-8'), patient.val().get("Patient Information",{}).get("password").encode('utf-8')):
+                
                 found_patient = patient.val()
             # user's information matches
         if found_patient:
