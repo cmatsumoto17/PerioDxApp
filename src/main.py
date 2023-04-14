@@ -1,5 +1,5 @@
 ### Summary: ###
-# main.py contains all functions need to build PerioDx App 
+# DOESN'T WORK IGNORE ME
 
 ### Authors: ###
 # Camerson Mastumoto
@@ -120,100 +120,120 @@ class MainApp(MDApp):
             return False
 
     def create_account(self):
-            config = {
-                "apiKey": "AIzaSyDg9UeV34LMRRBnvKukniuZZregaDhnrHs",
-                "authDomain": "periodxapp.firebaseapp.com",
-                "projectId": "periodxapp",
-                "storageBucket": "periodxapp.appspot.com",
-                "messagingSenderId": "1080188099101",
-                "appId": "1:1080188099101:web:981944e07511a572ffc4f4",
-                "measurementId": "G-YDJGGTR14X",
-                "databaseURL" : "https://periodxapp-default-rtdb.firebaseio.com/"
-            }
+        config = {
+            "apiKey": "AIzaSyDg9UeV34LMRRBnvKukniuZZregaDhnrHs",
+            "authDomain": "periodxapp.firebaseapp.com",
+            "projectId": "periodxapp",
+            "storageBucket": "periodxapp.appspot.com",
+            "messagingSenderId": "1080188099101",
+            "appId": "1:1080188099101:web:981944e07511a572ffc4f4",
+            "measurementId": "G-YDJGGTR14X",
+            "databaseURL" : "https://periodxapp-default-rtdb.firebaseio.com/"
+        }
 
-            # initializing app
-            firebase = pyrebase.initialize_app(config)
+        # initializing app
+        firebase = pyrebase.initialize_app(config)
 
-            # reference the databases
-            db = firebase.database()
+        # reference the databases
+        db = firebase.database()
 
-            # variables needed
-            # e = self.root.ids.create_account_scr.ids.email.text
-            password_pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" #!Q1w2e3r4 
-            email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+        # variables needed
+        # e = self.root.ids.create_account_scr.ids.email.text
+        password_pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" #!Q1w2e3r4 
+        email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
         
-            # empty first or last name
-            if(self.root.ids.create_account_scr.ids.first_name.text == ''):
-                self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty first name field'
-            elif(self.root.ids.create_account_scr.ids.last_name.text == ''):
-                self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty last name field'
-            elif(self.root.ids.create_account_scr.ids.email.text == ''):
-                self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty email address field'
-            
-            # invalid email address
-            elif(not(re.match(email_pattern, self.root.ids.create_account_scr.ids.email.text))):
-                self.root.ids.create_account_scr.ids.email.text = ''
-                self.root.ids.create_account_scr.ids.create_account_label.text = f'Please enter a valid email address'
 
-            # check if the email exists in the database
-            query = db.child("Patients").order_by_child("email").equal_to(self.root.ids.create_account_scr.ids.email.text).get()
-            if query.each():
-                self.root.ids.create_account_scr.ids.email.text = ''
-                self.root.ids.create_account_scr.ids.create_account_label.text = f'Email Already Exists'
+        # connection = sqlite3.connect('test_database.db')
+        # c = connection.cursor()
+        # c.execute("SELECT * FROM patients WHERE email=?", (e,))
+        # email_exists = c.fetchone()
+        # c.close()
+        
+        
+        # empty first or last name
+        if(self.root.ids.create_account_scr.ids.first_name.text == ''):
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty first name field'
+        elif(self.root.ids.create_account_scr.ids.last_name.text == ''):
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty last name field'
+        elif(self.root.ids.create_account_scr.ids.email.text == ''):
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty email address field'
+        
+        # invalid email address
+        elif(not(re.match(email_pattern, self.root.ids.create_account_scr.ids.email.text))):
+            self.root.ids.create_account_scr.ids.email.text = ''
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Please enter a valid email address'
 
-            # empty password field
-            elif(self.root.ids.create_account_scr.ids.password.text == ''):
-                self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty password field'
+        # check if the email exists in the database
+        query = db.child("Patients").order_by_child("email").equal_to(self.root.ids.create_account_scr.ids.email.text).get()
+        if query.each():
+            self.root.ids.create_account_scr.ids.email.text = ''
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Email Already Exists'
 
-            # invalid password
-            elif(not(re.match(password_pattern,self.root.ids.create_account_scr.ids.password.text))):
-                self.root.ids.create_account_scr.ids.create_account_label.text = f'Please enter a password thats a minimum length of 8, at least one uppercase letter, at least one lowercase letter, at least one digit, at least one special character'
-            
-            # empty password verification field 
-            elif(self.root.ids.create_account_scr.ids.password_verification.text == ''):
-                self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty password verification field'
-            
-            # checking password and password verification
-            elif(self.root.ids.create_account_scr.ids.password.text != self.root.ids.create_account_scr.ids.password_verification.text):
-                # password don't match error message
-                self.root.ids.create_account_scr.ids.create_account_label.text = f'Passwords Do Not Match' 
-            
-            # create an account
-            else:
+        # empty password field
+        elif(self.root.ids.create_account_scr.ids.password.text == ''):
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty password field'
 
-                # adding patient
-                first_name = self.root.ids.create_account_scr.ids.first_name.text
-                last_name = self.root.ids.create_account_scr.ids.last_name.text
-                email = self.root.ids.create_account_scr.ids.email.text
-                password = self.root.ids.create_account_scr.ids.password.text
+        # invalid password
+        elif(not(re.match(password_pattern,self.root.ids.create_account_scr.ids.password.text))):
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Please enter a password thats a minimum length of 8, at least one uppercase letter, at least one lowercase letter, at least one digit, at least one special character'
+        
+        # empty password verification field 
+        elif(self.root.ids.create_account_scr.ids.password_verification.text == ''):
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Empty password verification field'
+        
+        # checking password and password verification
+        elif(self.root.ids.create_account_scr.ids.password.text != self.root.ids.create_account_scr.ids.password_verification.text):
+            # password don't match error message
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'Passwords Do Not Match' 
+        
+        # create an account
+        else:
 
-                # hashing password
-                pass_bytes = password.encode('utf-8')
-                salt = bcrypt.gensalt()
-                hash_pass = bcrypt.hashpw(pass_bytes, salt)
+            # adding patient
+            first_name = self.root.ids.create_account_scr.ids.first_name.text
+            last_name = self.root.ids.create_account_scr.ids.last_name.text
+            email = self.root.ids.create_account_scr.ids.email.text
+            password = self.root.ids.create_account_scr.ids.password.text
 
-                patient_data = {
-                    "first_name": first_name,
-                    "last_name": last_name,
-                    "email": email,
-                    "password": hash_pass.decode('utf-8')
-                }
-                clean_email = email.replace('.', '').replace('@', '')
-                db.child("Patients").child(clean_email).child("Patient Information").set(patient_data)
-                # c.execute("INSERT INTO patients VALUES(?,?,?,?)",(first_name,last_name,email,password))
+            # hashing password
+            pass_bytes = password.encode('utf-8')
+            salt = bcrypt.gensalt()
+            hash_pass = bcrypt.hashpw(pass_bytes, salt)
 
-                # add a little message
-                self.root.ids.create_account_scr.ids.create_account_label.text = f'{first_name} {last_name} Account Created '
+            patient_data = {
+                "first_name": first_name,
+                "last_name": last_name,
+                "email": email,
+                "password": hash_pass.decode('utf-8')
+            }
+            clean_email = email.replace('.', '').replace('@', '')
+            db.child("Patients").child(clean_email).child("Patient Information").set(patient_data)
+            # c.execute("INSERT INTO patients VALUES(?,?,?,?)",(first_name,last_name,email,password))
+
+            # add a little message
+            self.root.ids.create_account_scr.ids.create_account_label.text = f'{first_name} {last_name} Account Created '
 
 
-                # clear the text fields
-                self.root.ids.create_account_scr.ids.first_name.text = ''
-                self.root.ids.create_account_scr.ids.last_name.text = ''
-                self.root.ids.create_account_scr.ids.email.text = ''
-                self.root.ids.create_account_scr.ids.password.text = ''
-                self.root.ids.create_account_scr.ids.password_verification.text = ''
-            
-                return Builder.load_file('main.kv')
+            # clear the text fields
+            self.root.ids.create_account_scr.ids.first_name.text = ''
+            self.root.ids.create_account_scr.ids.last_name.text = ''
+            self.root.ids.create_account_scr.ids.email.text = ''
+            self.root.ids.create_account_scr.ids.password.text = ''
+            self.root.ids.create_account_scr.ids.password_verification.text = ''
+
+            # # commit the changes
+            # connection.commit()
+
+            # # close the connections
+            # connection.close()
+
+            # reload screen
+            #print('this section of my code is working')
+            #MainApp.root = CreateAccountWindow()
+            #MainApp.root.clear_widgets()
+            #MainApp.root.add_widget(MainApp.root.build())
+        
+        return Builder.load_file('main.kv')
             
     def capture(self):
         camera = self.root.ids.camera_scr.ids['camera']
