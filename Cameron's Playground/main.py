@@ -354,13 +354,13 @@ class MainApp(MDApp):
             
             concentration = None
             
-            if g > 200:
+            if g > 210:
                 concentration = "LOW"
-            elif g > 175:
+            elif g > 170:
                 concentration = "MED"
-            elif g > 150:
+            elif g > 0:
                 concentration = "HIGH" 
-            else:
+            elif g > 256 or g < 0:
                 concentration = "Error"
                 
             
