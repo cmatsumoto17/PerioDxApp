@@ -261,11 +261,11 @@ class MainApp(MDApp):
             
             concentration = None
             
-            if g > 200:
+            if g > 210:
                 concentration = "LOW"
-            elif g > 175:
+            elif g > 170:
                 concentration = "MED"
-            elif g > 150:
+            elif g > 0:
                 concentration = "HIGH" 
             else:
                 concentration = "Error"
@@ -286,12 +286,13 @@ class MainApp(MDApp):
 
             
             #INSERT DATA INTO TXT FILE
-            file = open("Test_Results.txt", "a")
-            file.write(test_Results)
+            # file = open("Test_Results.txt", "a")
+            # file.write(test_Results)
             
-            file.close()
+            # file.close()
         else:
             print("No image captured")
+            
         return timestamp, concentration
 
     def add_datatable(self):
