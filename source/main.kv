@@ -2,17 +2,17 @@ WindowManager:
     LoginWindow:
         id: login_scr
     MainMenuWindow:
-        id: main_menu_window_scr
+
     CreateAccountWindow:
         id: create_account_scr
+    
     TestInstructionsWindow:
 
     CameraWindow:
         id: camera_scr
-    # ResultsWindow:
-    #     id: data_scr
-    TestResultsWindow:
-        id: test_results_scr
+
+    ResultsWindow:
+        id: data_scr
 
 
     
@@ -31,7 +31,7 @@ WindowManager:
     #     orientation: 'vertical'
 
     #adding items to the card
-    FloatLayout        :
+    FloatLayout:
 
         Image:
             source: 'PerioLogo.png'
@@ -46,10 +46,10 @@ WindowManager:
             mode: "round"
             size_hint_x: None
             width: 200
-            font_size: 18
+            font_size: 30
             pos_hint: {'center_x': .5,'y': .5}
             size_hint: (.8,.1)
-            on_text_validate:  pwd_field.focus =true
+            #on_text_validate:  password.focus = True;
 
         MDLabel:
             id: blank
@@ -63,12 +63,12 @@ WindowManager:
             icon_right: "eye-off"
             mode: "round"
             width: 200
-            font_size: 18
+            font_size: 30
             pos_hint: {'center_x': .5,'y': .3}
             size_hint: (.8,.1)
             password: True
             on_text_validate: 
-            #root.checkPass()
+                # app.check_password()
         MDLabel:
             id: error
             text: ""
@@ -77,7 +77,7 @@ WindowManager:
             size_hint: (.8,.1)
         Button:
             text: "Log In"
-            font_size: 16
+            font_size: 40
             background_color: (0/255, 239/255, 255/255)
             pos_hint: {'center_x': .5,'y': .15}
             size_hint: (.8,.1)
@@ -87,35 +87,28 @@ WindowManager:
 
         Button:
             text: "Create An Account"
-            font_size: 16
+            font_size: 40
             background_color: (0/255, 239/255, 255/255)
-            pos_hint: {'center_x': .5,'y': 0}
+            pos_hint: {'center_x': .5,'y': .05}
             size_hint: (.8,.1)
             on_release: 
                 app.root.current= "create account"
                 root.manager.transition.direction = "left"
 
 
-
 <CreateAccountWindow>:
     id: create_account_scr
     name: "create account"
-    MDCard:
-        size_hint: (1, 1)
-        size: 300, 400
-        pos_hint: {"center_x": .5, "center_y":.5}
-        elevation: 15
-        #md_bg_color: [229/255, 204/255, 255/255,1]
-        padding: 25
-        spacing: 25
-        orientation: 'vertical'
+    FloatLayout:
 
         MDLabel:
             id: create_account_label 
             text:"Create An Account"
-            font_size: 20
+            font_size: 40
             halign: "center"
-            size_hint_y: None
+            size_hint_y: 0.08
+            pos_hint: {'center_x': .5, 'y': .95}
+            size_hint: (.8,.1)
             height: self.texture_size[1]
             
 
@@ -126,8 +119,9 @@ WindowManager:
             mode: "round"
             size_hint_x: None
             width: 200
-            font_size: 12
-            pos_hint: {'center_x': 0.5}
+            font_size: 30
+            pos_hint: {'center_x': 0.5, 'y': 0.8}
+            size_hint: (.8,.1)
             
         MDTextField:
             id: last_name
@@ -136,8 +130,9 @@ WindowManager:
             mode: "round"
             size_hint_x: None
             width: 200
-            font_size: 12
-            pos_hint: {'center_x': 0.5}
+            font_size: 30
+            pos_hint: {'center_x': 0.5, 'y': 0.7}
+            size_hint: (.8,.1)
 
         MDTextField:
             id: email
@@ -146,8 +141,9 @@ WindowManager:
             mode: "round"
             size_hint_x: None
             width: 200
-            font_size: 12
-            pos_hint: {'center_x': 0.5}
+            font_size: 30
+            pos_hint: {'center_x': 0.5, 'y': 0.6}
+            size_hint: (.8,.1)
 
         MDTextField:
             id: password
@@ -155,8 +151,9 @@ WindowManager:
             icon_right: "eye-off"
             mode: "round"
             width: 200
-            font_size: 12
-            pos_hint: {"center_x": 0.5}
+            font_size: 
+            pos_hint: {'center_x': 0.5, 'y': 0.5}
+            size_hint: (.8,.1)
             password: True
 
         MDTextField:
@@ -165,37 +162,38 @@ WindowManager:
             icon_right: "eye-off"
             mode: "round"
             width: 200
-            font_size: 12
-            pos_hint: {"center_x": 0.5}
+            font_size: 30
+            pos_hint: {'center_x': 0.5, 'y': 0.4}
+            size_hint: (.8,.1)
             password: True
 
         MDFlatButton:
+        Button:
             text: "Create Account"
-            font_size: 12
-            pos_hint: {"center_x": 0.5}
+            font_size: 40
+            background_color: (0/255, 239/255, 255/255)
+            pos_hint: {'center_x': 0.5, 'y': 0.15}
+            size_hint: (.8,.1)
             on_release: 
                 #app.email_exist()
                 app.create_account()
-                
-        MDFlatButton:
+                # app.print()
+                #app.root.current= "login"
+                #root.manager.transition.direction = "left"
+
+        Button:
             text: "Back"
-            font_size: 12
-            pos_hint: {"center_x": 0.5}
+            font_size: 40
+            background_color: (0/255, 239/255, 255/255)
+            pos_hint: {'center_x': 0.5, 'y': 0.05}
+            size_hint: (.8,.1)
             on_release: 
                 app.root.current= "login"
                 root.manager.transition.direction = "left"
 
 <MainMenuWindow>:
     name:"main menu"
-    MDCard:
-        size_hint: (1, 1)
-        size: 300, 400
-        pos_hint: {"center_x": .5, "center_y":.5}
-        elevation: 15
-        #md_bg_color: [229/255, 204/255, 255/255,1]
-        padding: 25
-        spacing: 25
-        orientation: 'vertical'
+    FloatLayout:
 
         Image:
             source: 'PerioLogo.png'
@@ -218,7 +216,7 @@ WindowManager:
             font_size: 16
             bold: True
             background_color: (0/255, 239/255, 255/255)
-            pos_hint: {'center_x': .5,'y': .15}
+            pos_hint: {'center_x': .5,'y': .25}
             size_hint: (.8,.1)
             on_release: 
                 app.root.current= "test instructions"
@@ -230,22 +228,36 @@ WindowManager:
             font_size: 16
             bold: True
             background_color: (0/255, 239/255, 255/255)
-            pos_hint: {'center_x': .5,'y': .05}
+            pos_hint: {'center_x': .5,'y': .15}
             size_hint: (.8,.1) 
             on_release: 
                 app.view_results()
-                app.root.current= "test results"
+                app.root.current= "results"
                 root.manager.transition.direction = "left"
+                # app.add_datatable()
+                
+
+        Button:
+            id: "log_out_button"
+            text: "Log out"
+            font_size: 16
+            bold: True
+            background_color: (0/255, 239/255, 255/255)
+            pos_hint: {'center_x': .5,'y': .05}
+            size_hint: (.8,.1) 
+            on_release: 
+                app.root.current= "login"
+                root.manager.transition.direction = "right"
                 
 
 <TestInstructionsWindow>:
     name: "test instructions"
-    MDCard:
-        orientation: "vertical"
+    FloatLayout:
+
         MDLabel:
             text:"Instructions for Test:" 
             bold: True
-            font_size: 30
+            font_size: 40
             halign: "center"
             pos_hint: {"center_x": .5, "y":.8}
             size_hint: .8, .2
@@ -255,8 +267,9 @@ WindowManager:
             bold: False
             font_size: 16
             halign: "center"
-            pos_hint: {"center_x": .5, "y":.7} 
+            pos_hint: {"center_x": .5, "y":.5} 
             size_hint: .8, .4
+
     Button:
         text: "Continue to Test"
         font_size: 16
@@ -267,36 +280,89 @@ WindowManager:
         on_release:
             app.root.current = "camera"
             root.manager.transition.direction = "left"
-            app.add_camera()
-
+            # app.add_camera()
 
 <CameraWindow>:
     name: "camera" 
     FloatLayout:
         background_color: (255, 255, 255)
-        AnchorLayout:
-            id: camera_layout
-            size_hint: (.95, 1)
+        # AnchorLayout:
+        #     id: camera_layout
+        #     size_hint: (.95, 1)
+
+        # MDFloatingActionButton:
+        #     icon: "camera"
+        #     pos_hint: {"center_x": .5, "y": .05}
+        #     on_release: 
+        #         app.root.current = 'results'
+        #         app.color_analysis()
+        #         app.add_datatable()
+
+        # MDFloatingActionButton:
+        #     icon: 'arrow-left'
+        #     pos_hint: {'x': .1, 'y': .05}
+        #     on_release: app.root.current = 'main menu'
+       
+       
+        # canvas:
+        #     Color:
+        #         rgba: 0, 0, 1, 1
+            
+        #     Camera:
+        #         id: camera
+        #         resolution: (5375, 2419)
+        #         pos_hint: {'center_x': .5,'center_y': .5}
+        #         size_hint: (.9, .9)
+        #         play: True
+
+        #     Rectangle:
+        #         size: (10,10)
+        #         pos: self.pos
+
+        Camera:
+            id: camera
+            resolution: (640, 480)
+            pos_hint: {'center_x': .5,'center_y': .5}
+            size_hint: (.9, .9)
+            play: True
+
+            #rotate camera to be landscape
+            canvas.before:
+                PushMatrix
+                Rotate:
+                    angle: -90
+                    origin: self.center
+
+            canvas.after:
+                PopMatrix
+
+        Image:
+            source: 'blue-crosshair-target.png'
+            pos_hint: {"center_x": .5, "center_y":.5}
+            size_hint: .1, .1
 
         MDFloatingActionButton:
             icon: "camera"
             pos_hint: {"center_x": .5, "y": .05}
             on_release: 
                 
-                app.color_analysis()
+                app.capture()
+                #app.color_analysis()
                 app.add_datatable()
-                app.root.current = "test results"
                 app.view_results()
+                app.root.current = 'results'
 
         MDFloatingActionButton:
             icon: 'arrow-left'
             pos_hint: {'x': .1, 'y': .05}
-            on_release: app.root.current = 'main menu'
-  
-<TestResultsWindow>:
-    name: "test results"
+            on_release: 
+                app.root.current = 'main menu'
+
+                
+<ResultsWindow>:
+    name: "results"
     MDBoxLayout:
-        orientation: "vertical"
+        orientation: 'vertical'
         padding: 10
         MDLabel:
             id: title
@@ -308,8 +374,7 @@ WindowManager:
             size_hint: .8, .2
         MDFloatingActionButton:
             icon: 'arrow-left'
-            on_release: app.root.current = 'main menu'
+            on_release: 
+                app.root.current = 'main menu'
         AnchorLayout:
-            id: data_layout
-    
-    
+            id: data_layout    
