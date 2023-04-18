@@ -334,8 +334,16 @@ class MainApp(MDApp):
                 "email": email,
                 "password": hash_pass.decode('utf-8')
             }
+
+            results_data = {
+                "first_name": first_name,
+                "last_name": last_name,
+                "email": email,
+                "password": hash_pass.decode('utf-8')
+            }
             clean_email = email.replace('.', '').replace('@', '')
             db.child("Patients").child(clean_email).child("Patient Information").set(patient_data)
+            db.child("Patients").child(clean_email).child("Test Result").set(results_data)
             # c.execute("INSERT INTO patients VALUES(?,?,?,?)",(first_name,last_name,email,password))
 
             # add a little message
@@ -653,6 +661,7 @@ class MainApp(MDApp):
     #     self.root.ids.data_scr.ids.data_layout.add_widget(self.data_tables)
         
     def view_results(self):
+        
         config = {
             "apiKey": "AIzaSyDg9UeV34LMRRBnvKukniuZZregaDhnrHs",
             "authDomain": "periodxapp.firebaseapp.com",
@@ -683,25 +692,39 @@ class MainApp(MDApp):
         #     grid.add_widget(label)
 
         # return grid
-        # trying to add a table to the screen
-        self.data_tables = MDDataTable(
-                size_hint = (0.9, 0.8),
-                rows_num = 20,
-                column_data = [
-                    ("Test Number", dp(30)),
-                    ("Date", dp(20)),
-                    ("Antibody", dp(20)), 
-                    ("Result", dp(20))
-                ],)
-        self.root.ids.data_scr.ids.data_layout.add_widget(self.data_tables)
+
+
+        # customising test results page with patients full name
+        first_name = db.child("Patients").child(clean_email).child("Patient Information").get().val().get("first_name")
+        last_name = db.child("Patients").child(clean_email).child("Patient Information").get().val().get("last_name")
+        self.root.ids.data_scr.ids.title.text = f"{first_name} {last_name}'s Test Results"
+
+        # testing to see about empty data tables
+        test_results = db.child("Patients").child(clean_email).get().val()
         
-        for test_result in db.child("Patients").child(clean_email).child("Test Results").get():
-            test_number_id = test_result.key()
-            date = test_result.val().get('date')
-            antibody = test_result.val().get('antibody')
-            result = test_result.val().get('result')
-            data = (test_number_id, date,  antibody, result)
-            print(data)
+        if "Test Results" not in test_results:
+            self.root.ids.data_scr.ids.no_results.text = f"No Test Results Yet"
+        else:
+            self.root.ids.data_scr.ids.no_results.text = f""
+            # trying to add a table to the screen
+            self.data_tables = MDDataTable(
+                    size_hint = (0.9, 0.8),
+                    rows_num = 20,
+                    column_data = [
+                        ("Test Number", dp(30)),
+                        ("Date", dp(20)),
+                        ("Antibody", dp(20)), 
+                        ("Result", dp(20))
+                    ],)
+            self.root.ids.data_scr.ids.data_layout.add_widget(self.data_tables)
+        
+            for test_result in db.child("Patients").child(clean_email).child("Test Results").get():
+                test_number_id = test_result.key()
+                date = test_result.val().get('date')
+                antibody = test_result.val().get('antibody')
+                result = test_result.val().get('result')
+                data = (test_number_id, date,  antibody, result)
+                
 
             # row_data= [
             #     ({test_number_id}, {date}, {antibody}, {result})
@@ -713,12 +736,9 @@ class MainApp(MDApp):
             # print(row_data)
             # last_num_row = int(self.data_tables.row_data[-1][0])
             # test=("0", "1", "2", "3")
-            # !self.data_tables.add_row(data)
+            self.data_tables.add_row(data)
 
-        # customising test results page with patients full name
-        first_name = db.child("Patients").child(clean_email).child("Patient Information").get().val().get("first_name")
-        last_name = db.child("Patients").child(clean_email).child("Patient Information").get().val().get("last_name")
-        self.root.ids.data_scr.ids.title.text = f"{first_name} {last_name}'s Test Results"    
+            
 # runs the app / calls MainApp
 if __name__ == "__main__":
     MainApp().run()
