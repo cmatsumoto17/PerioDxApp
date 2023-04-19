@@ -5,6 +5,7 @@ import re
 import cv2
 import os
 import numpy as np
+import collections
 
 from kivy.lang import Builder
 from kivy.uix.widget import Widget
@@ -23,6 +24,7 @@ from kivy.config import Config
 from kivy.utils import platform
 from kivy.logger import Logger
 #from jnius import autoclass
+from collections.abc import MutableMapping
 
 
 from cryptography.fernet import Fernet
@@ -79,6 +81,8 @@ class WindowManager(ScreenManager):
 
 ### Creates the GUI ###
 class MainApp(MDApp):
+    test_type = None
+    
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.data_tables = None
@@ -474,6 +478,12 @@ class MainApp(MDApp):
     def print(self):
         print("whaddaup")
 
+    def IL6_test(self):
+        self.test_type = "IL-6"
+        
+    def MMP9_test(self):
+        self.test_type = "MMP-9"
+        
     def capture(self):
         camera = self.root.ids.camera_scr.ids['camera']
         img = camera.texture
@@ -500,18 +510,20 @@ class MainApp(MDApp):
             
             concentration = None
             
-            if g > 200:
+           
+                
+            if g > 210:
                 concentration = "LOW"
-            elif g > 175:
+            elif g > 170:
                 concentration = "MED"
-            elif g > 150:
+            elif g > 0:
                 concentration = "HIGH" 
-            else:
+            elif g > 256 or g < 0:
                 concentration = "Error"
                 
             
             timestamp = str(date.today())
-            test_Results =  timestamp + " " + concentration + " " + str(r) + " " + str(g) + " " + str(b) + "\n"
+            test_Results =  timestamp + " " + self.test_type + " " + concentration +  "\n"
             
             
             #INSERT DATA INTO DATABASE

@@ -271,8 +271,21 @@ WindowManager:
             size_hint: .8, .4
 
     Button:
-        text: "Continue to Test"
-        font_size: 16
+        text: "MMP-9 Test"
+        font_size: 30
+        bold: True
+        background_color: (0/255, 239/255, 255/255)
+        pos_hint: {'center_x': .5,'y': .2}
+        size_hint: (.8,.1) 
+        on_release:
+            app.root.current = "camera"
+            root.manager.transition.direction = "left"
+            app.MMP9_test()
+            # app.add_camera()
+
+    Button:
+        text: "IL-6 Test"
+        font_size: 30
         bold: True
         background_color: (0/255, 239/255, 255/255)
         pos_hint: {'center_x': .5,'y': .1}
@@ -280,6 +293,7 @@ WindowManager:
         on_release:
             app.root.current = "camera"
             root.manager.transition.direction = "left"
+            app.IL6_test()
             # app.add_camera()
 
 <CameraWindow>:

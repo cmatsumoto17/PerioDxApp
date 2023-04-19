@@ -78,6 +78,8 @@ class WindowManager(ScreenManager):
 
 ### Creates the GUI ###
 class MainApp(MDApp):
+    test_type = None
+    
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.data_tables = None
@@ -317,7 +319,9 @@ class MainApp(MDApp):
         
             return Builder.load_file('main.kv')
         
-        
+   
+###### CAMERA FUNCTIONS ######
+     
     def add_camera(self):
         #adding image to screen
         self.img = Image()
@@ -327,6 +331,11 @@ class MainApp(MDApp):
         self.capture = cv2.VideoCapture(0)
         Clock.schedule_interval(self.load_video, 1.0/30.0)
                 
+    def IL6_test(self):
+        self.test_type = "IL-6"
+        
+    def MMP9_test(self):
+        self.test_type = "MMP-9"
         
     def capture(self):
         camera = self.root.ids.camera_scr.ids['camera']
@@ -354,6 +363,8 @@ class MainApp(MDApp):
             
             concentration = None
             
+           
+                
             if g > 210:
                 concentration = "LOW"
             elif g > 170:
@@ -365,7 +376,10 @@ class MainApp(MDApp):
                 
             
             timestamp = str(date.today())
-            test_Results =  timestamp + " " + concentration + " " + str(r) + " " + str(g) + " " + str(b) + "\n"
+            test_Results =  timestamp + " " + self.test_type + " " + concentration +  "\n"
+            
+            #UNCOMMENT TO SEE RGB VALUES
+            # test_Results =  timestamp + " " + self.test_type + " " + concentration + " " + str(r) + " " + str(g) + " " + str(b) + "\n"
             
             
             #INSERT DATA INTO DATABASE
@@ -395,10 +409,11 @@ class MainApp(MDApp):
                 rows_num = 20,
                 column_data = [
                     ("Date", dp(20)),
+                    ("Antigen", dp(20)),
                     ("Result", dp(20)),
-                    ("R", dp(10)), 
-                    ("G", dp(10)),
-                    ("B", dp(10)),
+                    # ("R", dp(10)), 
+                    # ("G", dp(10)),
+                    # ("B", dp(10)),
                 ])
         
         #add rows to table
