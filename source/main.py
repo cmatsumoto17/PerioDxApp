@@ -579,7 +579,7 @@ class MainApp(MDApp):
         patient = self.login()
         clean_email = patient.replace('.', '').replace('@', '')
         timestamp,_ = self.capture()
-        antibody = "antibody"
+        antibody = self.test_type
         _, result = self.capture()
         
         # organize obtained variables into new result
@@ -741,11 +741,21 @@ class MainApp(MDApp):
                     ],)
             self.root.ids.data_scr.ids.data_layout.add_widget(self.data_tables)
         
-            for test_result in db.child("Patients").child(clean_email).child("Test Results").get():
-                test_number_id = test_result.key()
-                date = test_result.val().get('date')
-                antibody = test_result.val().get('antibody')
-                result = test_result.val().get('result')
+            # for test_result in db.child("Patients").child(clean_email).child("Test Results").get():
+            #     test_number_id = test_result.key()
+            #     date = test_result.val().get('date')
+            #     antibody = test_result.val().get('antibody')
+            #     result = test_result.val().get('result')
+            #     data = (test_number_id, date,  antibody, result)
+                
+            results = db.child("Patients").child(clean_email).child("Test Results").get()
+            
+            for test in results.each():
+                test_number_id = test.key()
+                date = test.val().get('date')
+                antibody = test.val().get('antibody')
+                result = test.val().get('result')
+                
                 data = (test_number_id, date,  antibody, result)
                 
 
