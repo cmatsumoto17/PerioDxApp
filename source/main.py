@@ -5,7 +5,7 @@ import re
 import cv2
 import os
 import numpy as np
-import collections
+import collections.abc
 
 from kivy.lang import Builder
 from kivy.uix.widget import Widget
@@ -23,8 +23,8 @@ from kivy.properties import NumericProperty, ListProperty,StringProperty, Object
 from kivy.config import Config
 from kivy.utils import platform
 from kivy.logger import Logger
-#from jnius import autoclass
-from collections.abc import MutableMapping
+#from jnius import autoclass,,k,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+from collections.abc import MutableMapping, Mapping
 
 
 from cryptography.fernet import Fernet
@@ -281,9 +281,20 @@ class MainApp(MDApp):
         # c.close()
         print("why aren't you working")
 
-        # check if the email exists in the database
-        query = db.child("Patients").order_by_child("Patient Information/email").equal_to(self.root.ids.create_account_scr.ids.email.text).get()
-        if query.each():
+        # clean entered email to remove special character.  Firebase cannot handle these characters
+        clean_user_email = self.root.ids.create_account_scr.ids.email.text.replace('.', '').replace('@', '')
+        
+        account_exists = False
+        
+        #get patients in database
+        patients = db.child("Patients").get()
+        
+        #check if email exists in database
+        for user in patients.each():
+            if user.key() == clean_user_email:
+                account_exists = True
+        
+        if account_exists:
             self.root.ids.create_account_scr.ids.email.text = ''
             self.root.ids.create_account_scr.ids.create_account_label.text = f'Email Already Exists'
 
