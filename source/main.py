@@ -758,6 +758,9 @@ class MainApp(MDApp):
                 
                 data = (test_number_id, date,  antibody, result)
                 
+                # add row to table with new data
+                self.data_tables.add_row(data)
+                
 
             # row_data= [
             #     ({test_number_id}, {date}, {antibody}, {result})
@@ -769,7 +772,7 @@ class MainApp(MDApp):
             # print(row_data)
             # last_num_row = int(self.data_tables.row_data[-1][0])
             # test=("0", "1", "2", "3")
-            self.data_tables.add_row(data)
+            
 
             
 # runs the app / calls MainApp
