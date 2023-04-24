@@ -102,12 +102,12 @@ WindowManager:
     FloatLayout:
 
         MDLabel:
-            id: create_account_label 
+            id: create_account_title 
             text:"Create An Account"
             font_size: 40
             halign: "center"
             size_hint_y: 0.08
-            pos_hint: {'center_x': .5, 'y': .95}
+            pos_hint: {'center_x': .5, 'y': .85}
             size_hint: (.8,.1)
             height: self.texture_size[1]
             
@@ -120,7 +120,7 @@ WindowManager:
             size_hint_x: None
             width: 200
             font_size: 30
-            pos_hint: {'center_x': 0.5, 'y': 0.8}
+            pos_hint: {'center_x': 0.5, 'y': 0.75}
             size_hint: (.8,.1)
             
         MDTextField:
@@ -131,7 +131,7 @@ WindowManager:
             size_hint_x: None
             width: 200
             font_size: 30
-            pos_hint: {'center_x': 0.5, 'y': 0.7}
+            pos_hint: {'center_x': 0.5, 'y': 0.65}
             size_hint: (.8,.1)
 
         MDTextField:
@@ -142,7 +142,7 @@ WindowManager:
             size_hint_x: None
             width: 200
             font_size: 30
-            pos_hint: {'center_x': 0.5, 'y': 0.6}
+            pos_hint: {'center_x': 0.5, 'y': 0.55}
             size_hint: (.8,.1)
 
         MDTextField:
@@ -152,7 +152,7 @@ WindowManager:
             mode: "round"
             width: 200
             font_size: 
-            pos_hint: {'center_x': 0.5, 'y': 0.5}
+            pos_hint: {'center_x': 0.5, 'y': 0.45}
             size_hint: (.8,.1)
             password: True
 
@@ -163,11 +163,21 @@ WindowManager:
             mode: "round"
             width: 200
             font_size: 30
-            pos_hint: {'center_x': 0.5, 'y': 0.4}
+            pos_hint: {'center_x': 0.5, 'y': 0.35}
             size_hint: (.8,.1)
             password: True
 
-        MDFlatButton:
+        MDLabel:
+            id: create_account_label 
+            text:""
+            font_size: 30
+            color: (1, 0, 0, 1)
+            halign: "center"
+            size_hint_y: 0.08
+            pos_hint: {'center_x': .5, 'y': .25}
+            size_hint: (.8,.1)
+            height: self.texture_size[1]
+
         Button:
             text: "Create Account"
             font_size: 40

@@ -50,8 +50,8 @@ import pyrebase
 # ])
 
 #set screen size
-Config.set('graphics', 'resizeable', False)
-Config.set('graphics', 'width', 200)# different screens
+# Config.set('graphics', 'resizeable', False)
+# Config.set('graphics', 'width', 200)# different screens
 
 ### Create the classes for each window ###
 
@@ -82,6 +82,7 @@ class WindowManager(ScreenManager):
 ### Creates the GUI ###
 class MainApp(MDApp):
     test_type = None
+    curr_user = None
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -140,8 +141,15 @@ class MainApp(MDApp):
             if patient.val().get("Patient Information",{}).get("email") == email and bcrypt.checkpw(password.encode('utf-8'), patient.val().get("Patient Information",{}).get("password").encode('utf-8')):
                 found_patient = patient.val()
             # user's information matches
+        
         if found_patient:
             print("login successful")
+            
+            #update current user to the email being used
+            self.curr_user = email
+            print(self.curr_user)
+            
+            #direct to main menu
             self.root.current = "main menu"
             return email
         
@@ -250,6 +258,7 @@ class MainApp(MDApp):
             
         else:
             self.root.ids.create_account_scr.ids.create_account_label.text = f'No Match found'
+    
     def create_account(self):
         config = {
             "apiKey": "AIzaSyDg9UeV34LMRRBnvKukniuZZregaDhnrHs",
@@ -290,10 +299,11 @@ class MainApp(MDApp):
         patients = db.child("Patients").get()
         
         #check if email exists in database
-        for user in patients.each():
-            if user.key() == clean_user_email:
-                account_exists = True
-        
+        if patients != None:
+            for user in patients.each():
+                if user.key() == clean_user_email:
+                    account_exists = True
+            
         if account_exists:
             self.root.ids.create_account_scr.ids.email.text = ''
             self.root.ids.create_account_scr.ids.create_account_label.text = f'Email Already Exists'
@@ -339,26 +349,28 @@ class MainApp(MDApp):
             password = self.root.ids.create_account_scr.ids.password.text
 
             # hashing password
-            pass_bytes = password.encode('utf-8')
-            salt = bcrypt.gensalt()
-            hash_pass = bcrypt.hashpw(pass_bytes, salt)
+            pass_bytes = password.encode('utf-8')           
+            hash_pass = self.hash(pass_bytes)
+            
+            key = Fernet.generate_key()
 
             patient_data = {
                 "first_name": first_name,
                 "last_name": last_name,
                 "email": email,
-                "password": hash_pass.decode('utf-8')
+                "password": hash_pass.decode('utf-8'),
+                "key" : key.decode('utf-8')
             }
 
-            results_data = {
-                "first_name": first_name,
-                "last_name": last_name,
-                "email": email,
-                "password": hash_pass.decode('utf-8')
-            }
+            # results_data = {
+            #     "first_name": first_name,
+            #     "last_name": last_name,
+            #     "email": email,
+            #     "password": hash_pass.decode('utf-8')
+            # }
             clean_email = email.replace('.', '').replace('@', '')
             db.child("Patients").child(clean_email).child("Patient Information").set(patient_data)
-            db.child("Patients").child(clean_email).child("Test Result").set(results_data)
+            # db.child("Patients").child(clean_email).child("Test Result").set(results_data)
             # c.execute("INSERT INTO patients VALUES(?,?,?,?)",(first_name,last_name,email,password))
 
             # add a little message
@@ -475,6 +487,83 @@ class MainApp(MDApp):
     #         #MainApp.root.add_widget(MainApp.root.build())
         
     #         return Builder.load_file('main.kv')
+    
+    def hash(self, bytes):
+        salt = bcrypt.gensalt()
+        hash = bcrypt.hashpw(bytes, salt)
+        
+        return hash
+    
+    
+    def get_key(self):
+        config = {
+            "apiKey": "AIzaSyDg9UeV34LMRRBnvKukniuZZregaDhnrHs",
+            "authDomain": "periodxapp.firebaseapp.com",
+            "projectId": "periodxapp",
+            "storageBucket": "periodxapp.appspot.com",
+            "messagingSenderId": "1080188099101",
+            "appId": "1:1080188099101:web:981944e07511a572ffc4f4",
+            "measurementId": "G-YDJGGTR14X",
+            "databaseURL" : "https://periodxapp-default-rtdb.firebaseio.com/"
+        }
+        
+        # initializing app
+        firebase = pyrebase.initialize_app(config)
+
+        # reference the databases
+        db = firebase.database()
+        
+        key = None
+        
+        print("User: ")
+        print(self.curr_user)
+        
+        #get patients in database
+        for patient in db.child("Patients").get().each():
+            db_user = patient.val().get("Patient Information",{}).get("email")
+        
+            # checking database information against current user
+            if db_user == self.curr_user:
+                key = patient.val().get("Patient Information",{}).get("key")
+                
+                print("Key is:")
+                print(key)
+                
+        if key:
+            return key
+        else:
+            print("no key found")
+                
+    def encrypt_data(self, data):
+        key = self.get_key()
+                
+        if key != None:
+            f = Fernet(key)
+            
+            enc = f.encrypt(data.encode())
+            
+            print(data)
+            print(enc)
+            
+            return enc.decode('utf-8')
+        else:
+            print("Error: could not find key")
+                  
+    def decrypt_data(self, data):
+        key = self.get_key()
+        
+        if key != None:
+            f = Fernet(key)
+                
+            dec = f.decrypt(data.encode())
+            
+            print(data)
+            print(dec)
+            
+            return dec.decode('utf-8')
+        else:
+            print("Error: could not find key")
+        
         
         
     def add_camera(self):
@@ -536,27 +625,13 @@ class MainApp(MDApp):
             timestamp = str(date.today())
             test_Results =  timestamp + " " + self.test_type + " " + concentration +  "\n"
             
-            
-            #INSERT DATA INTO DATABASE
-            # create database or connect to one
-            # connection = sqlite3.connect('enc_database.db')
-
-            # # create a cursor
-            # c = connection.cursor()
-            
-            # c.execute("INSERT INTO patients VALUES(date,r,g,b)",(timestamp, r, g, b))
-
-            
-            #INSERT DATA INTO TXT FILE
-            file = open("Test_Results.txt", "a")
-            file.write(test_Results)
-            
-            file.close()
         else:
             print("No image captured")
         
         return timestamp, concentration
-        
+    
+    
+    # ADDING DATA TABLE TO RESULTS PAGE
     def add_datatable(self):
         config = {
             "apiKey": "AIzaSyDg9UeV34LMRRBnvKukniuZZregaDhnrHs",
@@ -587,7 +662,7 @@ class MainApp(MDApp):
             "email": patient,
             "date": timestamp,
             "antibody": antibody,
-            "result":result
+            "result": self.encrypt_data(result)
             }
         
         ### creating the correct test result id ###
@@ -756,7 +831,9 @@ class MainApp(MDApp):
                 antibody = test.val().get('antibody')
                 result = test.val().get('result')
                 
-                data = (test_number_id, date,  antibody, result)
+                decrypt_result = self.decrypt_data(result)
+                
+                data = (test_number_id, date,  antibody, decrypt_result)
                 
                 # add row to table with new data
                 self.data_tables.add_row(data)
