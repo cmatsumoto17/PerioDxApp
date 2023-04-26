@@ -300,16 +300,18 @@ WindowManager:
 <CameraWindow>:
     name: "camera" 
     FloatLayout:
-        background_color: (0, 0, 0)
+        background_color: (255, 255, 255)
+
 
         Camera:
             id: camera
-            resolution: (self.width, self.height)
+            resolution: (640, 480)
             pos_hint: {'center_x': .5,'center_y': .5}
-            keep_ratio: False
+            size_hint: (.9, .9)
             play: True
 
-            # rotate camera to be landscape
+            # rotate camera to be vertical on the phone
+            # if running on desktop, COMMENT OUT both canvas widgets
             canvas.before:
                 PushMatrix
                 Rotate:

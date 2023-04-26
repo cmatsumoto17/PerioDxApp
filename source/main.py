@@ -23,7 +23,7 @@ from kivy.properties import NumericProperty, ListProperty,StringProperty, Object
 from kivy.config import Config
 from kivy.utils import platform
 from kivy.logger import Logger
-#from jnius import autoclass,,k,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+from jnius import autoclass
 from collections.abc import MutableMapping, Mapping
 
 
