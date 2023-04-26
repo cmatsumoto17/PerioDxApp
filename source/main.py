@@ -375,6 +375,7 @@ class MainApp(MDApp):
 
             # add a little message
             self.root.ids.create_account_scr.ids.create_account_label.text = f'{first_name} {last_name} Account Created '
+            self.root.ids.create_account_scr.ids.create_account_label.color = (0, 1, 0, 1)
 
 
             # clear the text fields
@@ -383,6 +384,8 @@ class MainApp(MDApp):
             self.root.ids.create_account_scr.ids.email.text = ''
             self.root.ids.create_account_scr.ids.password.text = ''
             self.root.ids.create_account_scr.ids.password_verification.text = ''
+            
+            # redirect to login screen
 
             # # commit the changes
             # connection.commit()
@@ -609,8 +612,6 @@ class MainApp(MDApp):
             print(f"RGB values at center: ({r}, {g}, {b})")
             
             concentration = None
-            
-           
                 
             if g > 210:
                 concentration = "LOW"
@@ -809,7 +810,7 @@ class MainApp(MDApp):
                     size_hint = (0.9, 0.8),
                     rows_num = 20,
                     column_data = [
-                        ("Test Number", dp(30)),
+                        # ("Test Number", dp(30)),
                         ("Date", dp(20)),
                         ("Antibody", dp(20)), 
                         ("Result", dp(20))
@@ -826,7 +827,7 @@ class MainApp(MDApp):
             results = db.child("Patients").child(clean_email).child("Test Results").get()
             
             for test in results.each():
-                test_number_id = test.key()
+                # test_number_id = test.key()
                 date = test.val().get('date')
                 antibody = test.val().get('antibody')
                 result = test.val().get('result')

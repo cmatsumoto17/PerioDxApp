@@ -211,15 +211,6 @@ WindowManager:
             pos_hint: {"center_x": .5, "y":.55}
             size_hint: .6, .6
 
-        # MDLabel:
-        #     id:"title_label"
-        #     text:"Perio-Dx: Bad Teeth = Bad Kidneys + Bad Heart"
-        #     font_size: 40
-        #     bold: True
-        #     halign: "center"
-        #     size_hint_y: None
-        #     height: self.texture_size[1]
-
         Button:
             id: "upload_test_button"
             text: "Upload Test"
@@ -273,7 +264,7 @@ WindowManager:
             size_hint: .8, .2
 
         MDLabel:
-            text:"To take a test, first enter a well-lit environment. Then line up the dots displayed on the camera with the lines on the test strip.  Press Save Image to capture the image and wait for results."
+            text:"To take a test, first enter a well-lit environment. Then select the appropriate test for MMP-9 or IL-6 using the buttons below.\n Capture an image of the test line on the test strip by pressing the Camera Icon."
             bold: False
             font_size: 16
             halign: "center"
@@ -309,48 +300,16 @@ WindowManager:
 <CameraWindow>:
     name: "camera" 
     FloatLayout:
-        background_color: (255, 255, 255)
-        # AnchorLayout:
-        #     id: camera_layout
-        #     size_hint: (.95, 1)
-
-        # MDFloatingActionButton:
-        #     icon: "camera"
-        #     pos_hint: {"center_x": .5, "y": .05}
-        #     on_release: 
-        #         app.root.current = 'results'
-        #         app.color_analysis()
-        #         app.add_datatable()
-
-        # MDFloatingActionButton:
-        #     icon: 'arrow-left'
-        #     pos_hint: {'x': .1, 'y': .05}
-        #     on_release: app.root.current = 'main menu'
-       
-       
-        # canvas:
-        #     Color:
-        #         rgba: 0, 0, 1, 1
-            
-        #     Camera:
-        #         id: camera
-        #         resolution: (5375, 2419)
-        #         pos_hint: {'center_x': .5,'center_y': .5}
-        #         size_hint: (.9, .9)
-        #         play: True
-
-        #     Rectangle:
-        #         size: (10,10)
-        #         pos: self.pos
+        background_color: (0, 0, 0)
 
         Camera:
             id: camera
-            resolution: (640, 480)
+            resolution: (self.width, self.height)
             pos_hint: {'center_x': .5,'center_y': .5}
-            size_hint: (.9, .9)
+            keep_ratio: False
             play: True
 
-            #rotate camera to be landscape
+            # rotate camera to be landscape
             canvas.before:
                 PushMatrix
                 Rotate:
