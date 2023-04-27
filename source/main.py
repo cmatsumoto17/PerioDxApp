@@ -288,7 +288,7 @@ class MainApp(MDApp):
         # c.execute("SELECT * FROM patients WHERE email=?", (e,))
         # email_exists = c.fetchone()
         # c.close()
-        print("why aren't you working")
+        # print("why aren't you working")
 
         # clean entered email to remove special character.  Firebase cannot handle these characters
         clean_user_email = self.root.ids.create_account_scr.ids.email.text.replace('.', '').replace('@', '')
@@ -529,9 +529,6 @@ class MainApp(MDApp):
             if db_user == self.curr_user:
                 key = patient.val().get("Patient Information",{}).get("key")
                 
-                print("Key is:")
-                print(key)
-                
         if key:
             return key
         else:
@@ -545,9 +542,6 @@ class MainApp(MDApp):
             
             enc = f.encrypt(data.encode())
             
-            print(data)
-            print(enc)
-            
             return enc.decode('utf-8')
         else:
             print("Error: could not find key")
@@ -559,9 +553,6 @@ class MainApp(MDApp):
             f = Fernet(key)
                 
             dec = f.decrypt(data.encode())
-            
-            print(data)
-            print(dec)
             
             return dec.decode('utf-8')
         else:
@@ -577,9 +568,6 @@ class MainApp(MDApp):
         #start video capture
         self.capture = cv2.VideoCapture(0)
         Clock.schedule_interval(self.load_video, 1.0/30.0)
-                
-    def print(self):
-        print("whaddaup")
 
     def IL6_test(self):
         self.test_type = "IL-6"
@@ -612,15 +600,28 @@ class MainApp(MDApp):
             print(f"RGB values at center: ({r}, {g}, {b})")
             
             concentration = None
-                
-            if g > 210:
-                concentration = "LOW"
-            elif g > 170:
-                concentration = "MED"
-            elif g > 0:
-                concentration = "HIGH" 
-            elif g > 256 or g < 0:
-                concentration = "Error"
+            
+            # color thresholds for MMP-9 test
+            if self.test_type == "MMP-9":    
+                if g > 210:
+                    concentration = "LOW"
+                elif g > 170:
+                    concentration = "MED"
+                elif g > 0:
+                    concentration = "HIGH" 
+                elif g > 256 or g < 0:
+                    concentration = "Error"
+            
+            # color thresholds for IL-6 test (since less concentration of IL-6 so lighter color change)
+            elif self.test_type == "IL-6":
+                if g > 220:
+                    concentration = "LOW"
+                elif g > 180:
+                    concentration = "MED"
+                elif g > 0:
+                    concentration = "HIGH" 
+                elif g > 256 or g < 0:
+                    concentration = "Error"
                 
             
             timestamp = str(date.today())
