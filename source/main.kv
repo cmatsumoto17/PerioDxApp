@@ -329,6 +329,7 @@ WindowManager:
         MDFloatingActionButton:
             icon: "camera"
             pos_hint: {"center_x": .5, "y": .05}
+            size_hint: .15, .15
             on_release: 
                 
                 app.capture()
@@ -340,6 +341,7 @@ WindowManager:
         MDFloatingActionButton:
             icon: 'arrow-left'
             pos_hint: {'x': .1, 'y': .05}
+            size_hint: .15, .15
             on_release: 
                 app.root.current = 'main menu'
 

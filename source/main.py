@@ -603,7 +603,7 @@ class MainApp(MDApp):
             
             # color thresholds for MMP-9 test
             if self.test_type == "MMP-9":    
-                if g > 210:
+                if g > 220:
                     concentration = "LOW"
                 elif g > 170:
                     concentration = "MED"
@@ -616,7 +616,7 @@ class MainApp(MDApp):
             elif self.test_type == "IL-6":
                 if g > 220:
                     concentration = "LOW"
-                elif g > 180:
+                elif g > 183:
                     concentration = "MED"
                 elif g > 0:
                     concentration = "HIGH" 
